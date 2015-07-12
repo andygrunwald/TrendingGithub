@@ -83,7 +83,7 @@ func StartTweeting(config *Configuration, debug *bool) {
 				goto LoopStart
 			}
 
-			if alreadyTweeted == true {
+			if alreadyTweeted > 0 {
 				goto LoopStart
 			}
 
@@ -93,8 +93,12 @@ func StartTweeting(config *Configuration, debug *bool) {
 		//log.Printf("Project will be tweeted %s - %s", p.Name, p.Description)
 		tweet := buildTweet(p)
 
+		// Generate score in format YYYYMMDDHHiiss
+		now := time.Now()
+		score := now.Format("20060102150405")
+
 		// TODO Switch to sorted set and use timestamp as score
-		res, err := redisClient.AddRepositoryToTweetedList(p.Name)
+		res, err := redisClient.AddRepositoryToTweetedList(p.Name, score)
 		if err != nil || res != 1 {
 			log.Printf("Error during adding project %s to tweeted list: %s (%d)", p.Name, err, res)
 		}

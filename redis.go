@@ -34,10 +34,16 @@ func NewRedisClient(config *RedisConfiguration) (*Redis, error) {
 	return r, nil
 }
 
-func (r *Redis) AddRepositoryToTweetedList(projectName string) (int, error) {
-	return redis.Int(r.Client.Do("SADD", ProjectKey, projectName))
+func (r *Redis) AddRepositoryToTweetedList(projectName, score string) (int, error) {
+	return redis.Int(r.Client.Do("ZADD", ProjectKey, score, projectName))
 }
 
-func (r *Redis) IsRepositoryAlreadyTweeted(projectName string) (bool, error) {
-	return redis.Bool(r.Client.Do("SISMEMBER", ProjectKey, projectName))
+func (r *Redis) IsRepositoryAlreadyTweeted(projectName string) (int, error) {
+	val, err := r.Client.Do("ZSCORE", ProjectKey, projectName)
+
+	if val == nil {
+		return 0, err
+	}
+
+	return redis.Int(val, err)
 }
