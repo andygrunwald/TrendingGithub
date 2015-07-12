@@ -1,0 +1,12 @@
+{
+  "twitter": {
+    "consumer-key": "",
+    "consumer-secret": "",
+    "access-token": "",
+    "access-token-secret": ""
+  },
+  "redis": {
+    "url": ":6379",
+    "auth": ""
+  }
+}
