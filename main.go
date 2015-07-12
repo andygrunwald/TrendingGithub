@@ -55,6 +55,15 @@ func StartTweeting(config *Configuration, debug *bool) {
 
 	// TODO Maybe this can be better done by channels
 
+	// TODO Make generation of trending project more intelligent
+	// Steps to do:
+	//		* Get all timeframes and check a random timeframe
+	//		  if this is not a success remove this timeframe from slice
+	//		  and continue.
+	//		* If no project was chosen, lets get trending languages
+	//		  and chose one randomly and request the timeframes again
+	//		  and repeat the "slice from removes trick there"
+
 	// Endless loop, because the bot should not stop tweeting :)
 	for {
 		redisClient, err := NewRedisClient(&config.Redis)
@@ -90,31 +99,7 @@ func StartTweeting(config *Configuration, debug *bool) {
 			goto Tweet
 		}
 	Tweet:
-		//log.Printf("Project will be tweeted %s - %s", p.Name, p.Description)
-		tweet := buildTweet(p)
-
-		// Generate score in format YYYYMMDDHHiiss
-		now := time.Now()
-		score := now.Format("20060102150405")
-
-		// TODO Switch to sorted set and use timestamp as score
-		res, err := redisClient.AddRepositoryToTweetedList(p.Name, score)
-		if err != nil || res != 1 {
-			log.Printf("Error during adding project %s to tweeted list: %s (%d)", p.Name, err, res)
-		}
-
-		if *debug {
-			log.Printf("Tweet: %s (length: %d)", tweet, len(tweet))
-
-		} else {
-			twitter := NewTwitterClient(&config.Twitter)
-			postedTweet, err := twitter.tweet(tweet)
-			if err != nil {
-				log.Println(err)
-			} else {
-				log.Printf("Tweet %s posted", postedTweet.IdStr)
-			}
-		}
+		tweetProject(p, redisClient, config, debug)
 
 		// Lets sleep for ~1h
 		// Currently i think it is okay to tweet every hour,
@@ -123,6 +108,33 @@ func StartTweeting(config *Configuration, debug *bool) {
 		// With this we got 24 tweets per day.
 		log.Println("Going to sleep now.")
 		time.Sleep(1 * time.Hour)
+	}
+}
+
+func tweetProject(p trending.Project, redisClient *Redis, config *Configuration, debug *bool) {
+	tweet := buildTweet(p)
+
+	// Generate score in format YYYYMMDDHHiiss
+	now := time.Now()
+	score := now.Format("20060102150405")
+
+	// TODO Switch to sorted set and use timestamp as score
+	res, err := redisClient.AddRepositoryToTweetedList(p.Name, score)
+	if err != nil || res != 1 {
+		log.Printf("Error during adding project %s to tweeted list: %s (%d)", p.Name, err, res)
+	}
+
+	if *debug {
+		log.Printf("Tweet: %s (length: %d)", tweet, len(tweet))
+
+	} else {
+		twitter := NewTwitterClient(&config.Twitter)
+		postedTweet, err := twitter.tweet(tweet)
+		if err != nil {
+			log.Println(err)
+		} else {
+			log.Printf("Tweet %s posted", postedTweet.IdStr)
+		}
 	}
 }
 
