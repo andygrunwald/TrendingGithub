@@ -94,10 +94,10 @@ func buildTweet(p trending.Project) string {
 	// Base length of a tweet
 	tweetLen := 140
 
-	// 20 letters for the url
+	// 20 letters for the url (+ 1 character for a whitespace)
 	// see https://dev.twitter.com/overview/t.co
 	// TODO we have to replace this by an API call
-	tweetLen -= 20
+	tweetLen -= 21
 
 	// Check if the length of the project name is > 120 chars
 	// We substract 3 chars, because we will add a suffix " - "
@@ -111,19 +111,18 @@ func buildTweet(p trending.Project) string {
 	}
 
 	// We only post descriptions if we got more than 20 charactes available
-	// + 1 character for a whitespace
-	if tweetLen > 21 {
+	if tweetLen > 20 {
 		if len(p.Description) < tweetLen {
 			tweet += p.Description
 		} else {
 			tweet += p.Description[0:(tweetLen - 1)]
 		}
-		tweet += " "
 	}
 
 	// Lets add the URL, but we don`t need to substract the chars
 	// because we have done this before
 	if p.URL != nil {
+		tweet += " "
 		tweet += p.URL.String()
 	}
 
