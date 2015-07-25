@@ -69,7 +69,7 @@ func StartTweeting(config *Configuration, debug *bool) {
 		// We will just output them.
 		// This is a good development feature ;)
 		if *debug {
-			log.Printf("Tweet: %s (length: %d)", tweet, len(tweet.Tweet))
+			log.Printf("Tweet: %s (length: %d)", tweet.Tweet, len(tweet.Tweet))
 
 		} else {
 			markTweetAsAlreadyTweeted(tweet.ProjectName, config)
