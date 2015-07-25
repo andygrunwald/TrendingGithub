@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/andygrunwald/go-trending"
 	"io/ioutil"
 	"log"
 	"os"
@@ -14,6 +13,7 @@ const (
 	majorVersion = 1
 	minorVersion = 0
 	patchVersion = 0
+	tweetTimes   = 5 * time.Second
 )
 
 // TODO: Daily GET call to help/configuration to receive max length for URL
@@ -50,126 +50,42 @@ func main() {
 	StartTweeting(config, flagDebug)
 }
 
+// StartTweeting bundles the main logic of this bot.
+// It schedules the times when we are looking for a new project to tweet.
+// If we found a project, we will build the tweet and tweet it to our followers.
+// Because we love our followers ;)
 func StartTweeting(config *Configuration, debug *bool) {
-	trend := NewTrendingClient()
+	tweetChan := make(chan *Tweet)
 
-	// TODO Maybe this can be better done by channels
+	// Schedule first tweet
+	time.AfterFunc(tweetTimes, func() {
+		generateNewTweet(tweetChan, config)
+	})
 
-	// TODO Make generation of trending project more intelligent
-	// Steps to do:
-	//		* Get all timeframes and check a random timeframe
-	//		  if this is not a success remove this timeframe from slice
-	//		  and continue.
-	//		* If no project was chosen, lets get trending languages
-	//		  and chose one randomly and request the timeframes again
-	//		  and repeat the "slice from removes trick there"
+	// Waiting for tweets ...
+	for tweet := range tweetChan {
 
-	// Endless loop, because the bot should not stop tweeting :)
-	for {
-		redisClient, err := NewRedisClient(&config.Redis)
-		if err != nil {
-			log.Fatal(err)
-		}
-	NewTimeFrame:
-		timeFrame := trend.getRandomTimeFrame()
-		log.Printf("Getting projects for timeframe %s", timeFrame)
-		getProject := trend.getRandomProjectGenerator(timeFrame)
+		// If we are running in debug mode, we won`t tweet the tweet.
+		// We will just output them.
+		// This is a good development feature ;)
+		if *debug {
+			log.Printf("Tweet: %s (length: %d)", tweet, len(tweet.Tweet))
 
-		var getProjectError error
-		var p trending.Project
-		for getProjectError == nil {
-		LoopStart:
-			p, getProjectError = getProject()
-			if getProjectError != nil {
-				log.Println(getProjectError)
-				goto NewTimeFrame
-			}
+		} else {
+			markTweetAsAlreadyTweeted(tweet.ProjectName, config)
 
-			// We found a tweet
-			alreadyTweeted, err := redisClient.IsRepositoryAlreadyTweeted(p.Name)
+			twitter := NewTwitterClient(&config.Twitter)
+			postedTweet, err := twitter.tweet(tweet.Tweet)
 			if err != nil {
 				log.Println(err)
-				goto LoopStart
+			} else {
+				log.Printf("Tweet %s posted", postedTweet.IdStr)
 			}
-
-			if alreadyTweeted > 0 {
-				goto LoopStart
-			}
-
-			goto Tweet
 		}
-	Tweet:
-		tweetProject(p, redisClient, config, debug)
 
-		// Lets sleep for ~1h
-		// Currently i think it is okay to tweet every hour,
-		// because we don`t hit the rate limit of the Twitter API
-		// and new projects must be trending ;)
-		// With this we got 24 tweets per day.
-		log.Println("Going to sleep now.")
-		time.Sleep(1 * time.Hour)
+		// Schedule new tweet
+		time.AfterFunc(tweetTimes, func() {
+			generateNewTweet(tweetChan, config)
+		})
 	}
-}
-
-func tweetProject(p trending.Project, redisClient *Redis, config *Configuration, debug *bool) {
-	tweet := buildTweet(p)
-
-	// Generate score in format YYYYMMDDHHiiss
-	now := time.Now()
-	score := now.Format("20060102150405")
-
-	// TODO Switch to sorted set and use timestamp as score
-	res, err := redisClient.AddRepositoryToTweetedList(p.Name, score)
-	if err != nil || res != 1 {
-		log.Printf("Error during adding project %s to tweeted list: %s (%d)", p.Name, err, res)
-	}
-
-	if *debug {
-		log.Printf("Tweet: %s (length: %d)", tweet, len(tweet))
-
-	} else {
-		twitter := NewTwitterClient(&config.Twitter)
-		postedTweet, err := twitter.tweet(tweet)
-		if err != nil {
-			log.Println(err)
-		} else {
-			log.Printf("Tweet %s posted", postedTweet.IdStr)
-		}
-	}
-}
-
-func buildTweet(p trending.Project) string {
-	tweet := ""
-
-	tweetLen := 140
-	// 20 letters for the url
-	// see https://dev.twitter.com/overview/t.co
-	// TODO we have to replace this by an API call
-	tweetLen -= 20
-
-	if nameLen := len(p.Name); nameLen < (tweetLen - 3) {
-		tweetLen -= len(p.Name)
-		tweet += p.Name
-
-		// Add name suffix " - "
-		tweetLen -= 3
-		tweet += " - "
-	}
-
-	// We only post descriptions if we got more than 20 charactes available
-	// + 1 character for a whitespace
-	if tweetLen > 21 {
-		if len(p.Description) < tweetLen {
-			tweet += p.Description
-		} else {
-			tweet += p.Description[0:(tweetLen - 1)]
-		}
-		tweet += " "
-	}
-
-	if p.URL != nil {
-		tweet += p.URL.String()
-	}
-
-	return tweet
 }
