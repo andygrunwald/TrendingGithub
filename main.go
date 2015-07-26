@@ -66,8 +66,6 @@ func StartTweeting(config *Configuration, debug *bool) {
 			log.Printf("Tweet: %s (length: %d)", tweet.Tweet, len(tweet.Tweet))
 
 		} else {
-			markTweetAsAlreadyTweeted(tweet.ProjectName, config)
-
 			twitter := NewTwitterClient(&config.Twitter)
 			postedTweet, err := twitter.tweet(tweet.Tweet)
 			if err != nil {
@@ -76,6 +74,7 @@ func StartTweeting(config *Configuration, debug *bool) {
 				log.Printf("Tweet %s posted", postedTweet.IdStr)
 			}
 		}
+		markTweetAsAlreadyTweeted(tweet.ProjectName, config)
 
 		// Schedule new tweet
 		time.AfterFunc(tweetTimes, func() {
