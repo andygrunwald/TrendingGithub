@@ -12,7 +12,7 @@ import (
 const (
 	majorVersion = 0
 	minorVersion = 0
-	patchVersion = 1
+	patchVersion = 2
 	tweetTimes   = 30 * time.Minute
 )
 
