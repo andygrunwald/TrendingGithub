@@ -61,8 +61,10 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 // checks if this was already tweeted.
 func findProjectWithRandomProjectGenerator(getProject func() (trending.Project, error), redisClient *Redis) trending.Project {
 	var projectToTweet trending.Project
+	var project trending.Project
+	var projectErr error
 
-	for project, err := getProject(); err == nil; {
+	for project, projectErr = getProject(); projectErr == nil; project, projectErr = getProject() {
 		// Check if the project was already tweeted
 		alreadyTweeted, err := redisClient.IsRepositoryAlreadyTweeted(project.Name)
 		if err != nil {
