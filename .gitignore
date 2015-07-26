@@ -26,3 +26,7 @@ _testmain.go
 # Application
 TrendingGithub
 config.json
+
+# Application release
+TrendingGithub-v*
+release/
