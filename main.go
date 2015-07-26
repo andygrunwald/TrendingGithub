@@ -13,11 +13,10 @@ const (
 	majorVersion = 1
 	minorVersion = 0
 	patchVersion = 0
-	tweetTimes   = 5 * time.Second
+	tweetTimes   = 30 * time.Minute
 )
 
 func main() {
-
 	// Output the version and exit
 	if *flagVersion {
 		fmt.Printf("@TrendingGithub v%d.%d.%d\n", majorVersion, minorVersion, patchVersion)
