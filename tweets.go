@@ -94,10 +94,20 @@ func buildTweet(p trending.Project) string {
 	// Base length of a tweet
 	tweetLen := 140
 
-	// 20 letters for the url (+ 1 character for a whitespace)
-	// see https://dev.twitter.com/overview/t.co
-	// TODO we have to replace this by an API call
-	tweetLen -= 21
+	// 25 letters for the url (+ 1 character for a whitespace)
+	// TODO: Daily GET call to help/configuration to receive max length for URL
+	// Only with this we are able to fill out 140 chars as max as possible.
+	// @link https://dev.twitter.com/overview/t.co
+	// @link https://dev.twitter.com/rest/reference/get/help/configuration
+	//
+	// Currently this value is hardcoded.
+	// Anaconda (the twitter library we use) doesn`t support this yet.
+	// There is a pull request waiting: https://github.com/ChimeraCoder/anaconda/pull/66
+	// Today (2015-07-26) the values are
+	//	"short_url_length": 22,
+	//	"short_url_length_https": 23
+	// We choose a few chars more to get some more time until Anaconda accepts the PR
+	tweetLen -= 26
 
 	// Check if the length of the project name is > 120 chars
 	// We substract 3 chars, because we will add a suffix " - "

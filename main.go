@@ -16,11 +16,6 @@ const (
 	tweetTimes   = 5 * time.Second
 )
 
-// TODO: Daily GET call to help/configuration to receive max length for URL
-// Only with this we are able to fill out 140 chars as max as possible.
-// @link https://dev.twitter.com/overview/t.co
-// @link https://dev.twitter.com/rest/reference/get/help/configuration
-
 func main() {
 
 	// Output the version and exit
