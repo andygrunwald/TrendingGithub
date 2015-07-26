@@ -30,14 +30,15 @@ func (t *Trend) GetTimeFrames() []string {
 
 // GetRandomProjectGenerator returns a closure to retrieve a random project based on timeFrame.
 // timeFrame is a string based on the timeframes provided by go-trending or GetTimeFrames.
-func (t *Trend) GetRandomProjectGenerator(timeFrame string) func() (trending.Project, error) {
+// language is a (programing) language provided by go-trending. Can be empty as well.
+func (t *Trend) GetRandomProjectGenerator(timeFrame, language string) func() (trending.Project, error) {
 	var projects []trending.Project
 	var err error
 
 	// Get projects based on timeframe
 	// This makes the initial HTTP call to github.
 	githubTrending := trending.NewTrending()
-	projects, err = githubTrending.GetProjects(timeFrame, "")
+	projects, err = githubTrending.GetProjects(timeFrame, language)
 	if err != nil {
 		return func() (trending.Project, error) {
 			return trending.Project{}, err

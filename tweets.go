@@ -37,9 +37,10 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 	timeFrames := trendingClient.GetTimeFrames()
 	ShuffleStringSlice(timeFrames)
 
+	// First get the timeframes
 	for _, timeFrame := range timeFrames {
 		log.Printf("Getting projects for timeframe %s", timeFrame)
-		getProject := trendingClient.GetRandomProjectGenerator(timeFrame)
+		getProject := trendingClient.GetRandomProjectGenerator(timeFrame, "")
 		projectToTweet = findProjectWithRandomProjectGenerator(getProject, redisClient)
 
 		// Check if we found a project.
