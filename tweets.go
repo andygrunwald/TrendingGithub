@@ -50,9 +50,15 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 		}
 	}
 
+	sendProject(tweetChan, projectToTweet)
+}
+
+// sendProject puts the project we want to tweet into the tweet queue
+// If the queue is ready to receive a new project, this will be tweeted
+func sendProject(tweetChan chan *Tweet, p trending.Project) {
 	tweet := &Tweet{
-		Tweet:       buildTweet(projectToTweet),
-		ProjectName: projectToTweet.Name,
+		Tweet:       buildTweet(p),
+		ProjectName: p.Name,
 	}
 	tweetChan <- tweet
 }
