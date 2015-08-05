@@ -175,11 +175,15 @@ func buildTweet(p trending.Project) string {
 
 	// We only post descriptions if we got more than 20 charactes available
 	if tweetLen > 20 {
+		projectDescription := ""
 		if len(p.Description) < tweetLen {
-			tweet += p.Description
+			projectDescription = p.Description
 		} else {
-			tweet += p.Description[0:(tweetLen - 1)]
+			projectDescription = crop(p.Description, (tweetLen - 1), "...", true)
 		}
+
+		tweetLen -= len(projectDescription)
+		tweet += projectDescription
 	}
 
 	// Lets add the URL, but we don`t need to substract the chars
