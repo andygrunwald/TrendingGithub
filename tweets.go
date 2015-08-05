@@ -162,19 +162,18 @@ func buildTweet(p trending.Project) string {
 	// We choose a few chars more to get some more time until Anaconda accepts the PR
 	tweetLen -= 26
 
-	// Check if the length of the project name is > 120 chars
-	// We substract 3 chars, because we will add a suffix " - "
-	if nameLen := len(p.Name); nameLen < (tweetLen - 3) {
+	// Check if the length of the project name is > 114 chars
+	if nameLen := len(p.Name); nameLen < tweetLen {
 		tweetLen -= len(p.Name)
 		tweet += p.Name
-
-		// Add name suffix " - "
-		tweetLen -= 3
-		tweet += " - "
 	}
 
-	// We only post descriptions if we got more than 20 charactes available
-	if tweetLen > 20 {
+	// We only post a description if we got more than 20 charactes available
+	// We have to add 3 chars more, because of the prefix " - "
+	if tweetLen > 23 && len(p.Description) > 0 {
+		tweetLen -= 3
+		tweet += " - "
+
 		projectDescription := ""
 		if len(p.Description) < tweetLen {
 			projectDescription = p.Description
