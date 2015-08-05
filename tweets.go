@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/andygrunwald/go-trending"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -190,6 +191,15 @@ func buildTweet(p trending.Project) string {
 	if p.URL != nil {
 		tweet += " "
 		tweet += p.URL.String()
+	}
+
+	// Lets check if we got space left to add the language as hashtag
+	language := strings.Replace(p.Language, " ", "", -1)
+	// len + 2, because of " #" in front of the hashtag
+	hashTagLen := (len(language) + 2)
+	if len(language) > 0 && tweetLen >= hashTagLen {
+		tweet += " #" + language
+		tweetLen -= hashTagLen
 	}
 
 	return tweet
