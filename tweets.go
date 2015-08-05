@@ -38,17 +38,7 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 	ShuffleStringSlice(timeFrames)
 
 	// First get the timeframes without any languages
-	for _, timeFrame := range timeFrames {
-		log.Printf("Getting projects for timeframe %s", timeFrame)
-		getProject := trendingClient.GetRandomProjectGenerator(timeFrame, "")
-		projectToTweet = findProjectWithRandomProjectGenerator(getProject, redisClient)
-
-		// Check if we found a project.
-		// If yes we can leave the loop and keep on rockin
-		if isProjectEmpty(projectToTweet) == false {
-			break
-		}
-	}
+	projectToTweet = timeframeLoopToSearchAProject(timeFrames, "", trendingClient, redisClient)
 
 	// Check if we found a project. If yes tweet it.
 	if isProjectEmpty(projectToTweet) == false {
@@ -88,8 +78,25 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 	// Check if we found a project. If yes tweet it.
 	if isProjectEmpty(projectToTweet) == false {
 		sendProject(tweetChan, projectToTweet)
-		return
 	}
+}
+
+func timeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
+	var projectToTweet trending.Project
+
+	for _, timeFrame := range timeFrames {
+		log.Printf("Getting projects for timeframe %s", timeFrame)
+		getProject := trendingClient.GetRandomProjectGenerator(timeFrame, language)
+		projectToTweet = findProjectWithRandomProjectGenerator(getProject, redisClient)
+
+		// Check if we found a project.
+		// If yes we can leave the loop and keep on rockin
+		if isProjectEmpty(projectToTweet) == false {
+			break
+		}
+	}
+
+	return projectToTweet
 }
 
 // sendProject puts the project we want to tweet into the tweet queue
