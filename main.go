@@ -14,6 +14,7 @@ const (
 	minorVersion = 0
 	patchVersion = 2
 	tweetTimes   = 30 * time.Minute
+	// tweetTimes = 5 * time.Second
 )
 
 func main() {
