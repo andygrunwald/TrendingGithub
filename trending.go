@@ -28,6 +28,29 @@ func (t *Trend) GetTimeFrames() []string {
 	return []string{trending.TimeToday, trending.TimeWeek, trending.TimeMonth}
 }
 
+// GetTrendingLanguages returns all trending languages,
+// but only the URLNames, because this is what we need.
+// Errors are not important here.
+func (t *Trend) GetTrendingLanguages() []string {
+	languages, err := t.Client.GetTrendingLanguages()
+	if err != nil {
+		return []string{}
+	}
+
+	// I know. Slices with a predefined number of elements (0) is not a good idea.
+	// But we are calling an external API and don`t know how many items will be there.
+	// Furthere more we will filter some languages in the loop.
+	// Does anyone got a better idea? Contact me!
+	var trendingLanguages []string
+	for _, language := range languages {
+		if len(language.URLName) > 0 {
+			trendingLanguages = append(trendingLanguages, language.URLName)
+		}
+	}
+
+	return trendingLanguages
+}
+
 // GetRandomProjectGenerator returns a closure to retrieve a random project based on timeFrame.
 // timeFrame is a string based on the timeframes provided by go-trending or GetTimeFrames.
 // language is a (programing) language provided by go-trending. Can be empty as well.
