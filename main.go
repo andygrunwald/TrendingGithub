@@ -11,8 +11,8 @@ import (
 
 const (
 	majorVersion = 0
-	minorVersion = 0
-	patchVersion = 2
+	minorVersion = 1
+	patchVersion = 0
 	tweetTimes   = 30 * time.Minute
 	// tweetTimes = 5 * time.Second
 )
