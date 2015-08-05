@@ -45,7 +45,7 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 
 		// Check if we found a project.
 		// If yes we can leave the loop and keep on rockin
-		if len(projectToTweet.Name) > 0 {
+		if isProjectEmpty(projectToTweet) == false {
 			break
 		}
 	}
@@ -55,6 +55,15 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 		ProjectName: projectToTweet.Name,
 	}
 	tweetChan <- tweet
+}
+
+// isProjectEmpty checks if the incoming project is empty
+func isProjectEmpty(p trending.Project) bool {
+	if len(p.Name) > 0 {
+		return true
+	}
+
+	return false
 }
 
 // findProjectWithRandomProjectGenerator retrieves a new project and

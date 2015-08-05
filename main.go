@@ -58,6 +58,22 @@ func StartTweeting(config *Configuration, debug *bool) {
 
 	// Waiting for tweets ...
 	for tweet := range tweetChan {
+		// Schedule new tweet
+		time.AfterFunc(tweetTimes, func() {
+			generateNewTweet(tweetChan, config)
+		})
+
+		// Sometimes it happens that we won`t get a project.
+		// In this situation we try to avoid empty tweets like ...
+		//	* https://twitter.com/TrendingGithub/status/628714326564696064
+		//	* https://twitter.com/TrendingGithub/status/628530032361795584
+		//	* https://twitter.com/TrendingGithub/status/628348405790711808
+		// we will return here
+		// We do this check here and not in tweets.go, because otherwise
+		// a new tweet won`t be scheduled
+		if len(tweet.ProjectName) > 0 {
+			continue
+		}
 
 		// If we are running in debug mode, we won`t tweet the tweet.
 		// We will just output them.
@@ -76,9 +92,5 @@ func StartTweeting(config *Configuration, debug *bool) {
 		}
 		markTweetAsAlreadyTweeted(tweet.ProjectName, config)
 
-		// Schedule new tweet
-		time.AfterFunc(tweetTimes, func() {
-			generateNewTweet(tweetChan, config)
-		})
 	}
 }
