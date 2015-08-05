@@ -71,7 +71,8 @@ func StartTweeting(config *Configuration, debug *bool) {
 		// we will return here
 		// We do this check here and not in tweets.go, because otherwise
 		// a new tweet won`t be scheduled
-		if len(tweet.ProjectName) > 0 {
+		if len(tweet.ProjectName) <= 0 {
+			log.Print("No project found. No tweet sent.")
 			continue
 		}
 

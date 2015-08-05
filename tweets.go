@@ -60,10 +60,10 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 // isProjectEmpty checks if the incoming project is empty
 func isProjectEmpty(p trending.Project) bool {
 	if len(p.Name) > 0 {
-		return true
+		return false
 	}
 
-	return false
+	return true
 }
 
 // findProjectWithRandomProjectGenerator retrieves a new project and
