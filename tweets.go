@@ -47,45 +47,34 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 	}
 
 	// If not, keep going and try to get some (trending) languages
-	//
-	// Yep, i know. This is nearly the same code as above.
-	// And this is a code smell. But this is the first try.
-	// And i want to get it working, before i will start refactoring.
-	// You know? Make it work, make it fast, make it beautiful...
 	languages := trendingClient.GetTrendingLanguages()
 	ShuffleStringSlice(languages)
 	ShuffleStringSlice(timeFrames)
 
 	for _, language := range languages {
-		for _, timeFrame := range timeFrames {
-			log.Printf("Getting projects for timeframe %s and language %s", timeFrame, language)
-			getProject := trendingClient.GetRandomProjectGenerator(timeFrame, language)
-			projectToTweet = findProjectWithRandomProjectGenerator(getProject, redisClient)
-
-			// Check if we found a project.
-			// If yes we can leave the loop and keep on rockin
-			if isProjectEmpty(projectToTweet) == false {
-				break
-			}
-		}
+		projectToTweet = timeframeLoopToSearchAProject(timeFrames, language, trendingClient, redisClient)
 
 		// If we found a project, break this loop again.
 		if isProjectEmpty(projectToTweet) == false {
+			sendProject(tweetChan, projectToTweet)
 			break
 		}
 	}
-
-	// Check if we found a project. If yes tweet it.
-	if isProjectEmpty(projectToTweet) == false {
-		sendProject(tweetChan, projectToTweet)
-	}
 }
 
+// timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
+// to try to find a new tweet.
+// You can say that this is nearly the <3 of this bot.
 func timeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
 	var projectToTweet trending.Project
 
 	for _, timeFrame := range timeFrames {
-		log.Printf("Getting projects for timeframe %s", timeFrame)
+		if len(language) > 0 {
+			log.Printf("Getting projects for timeframe %s and language %s", timeFrame, language)
+		} else {
+			log.Printf("Getting projects for timeframe %s", timeFrame)
+		}
+
 		getProject := trendingClient.GetRandomProjectGenerator(timeFrame, language)
 		projectToTweet = findProjectWithRandomProjectGenerator(getProject, redisClient)
 
