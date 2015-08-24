@@ -12,7 +12,7 @@ Follow us at **[@TrendingGithub](https://twitter.com/TrendingGithub)**.
 ## Motivation
 
 I love to discover new tools, new projects, new languages, new people who share the same passion like me, new coding best practices, new exciting ideas.
-And [i use twitter a lot](https://twitter.com/andygrunwald) and have to less time to check [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) on a daily basis.
+And [I use twitter a lot](https://twitter.com/andygrunwald) and have little time to check [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) on a daily basis.
 
 Why not combine both to save time, favorite projects and developers and spread them by retweets?
 
@@ -37,9 +37,9 @@ See [Configuration chapter](https://github.com/andygrunwald/TrendingGithub#confi
 
 **--debug** is quite useful for development.
 It doesn`t output special information.
-It only avoid using the twitter API for tweet purposes and outputs the tweet on stdout.
+It only avoids using the Twitter API for tweet purposes and outputs the tweet on stdout.
 
-**--pidfile** is useful to run this process in production and observing it by a monitoring tool like [Nagios](https://www.nagios.org/), [Icinga](https://www.icinga.org/), [Monit](https://mmonit.com/monit/), [supervisord](http://supervisord.org/) or similar.
+**--pidfile** is useful to run this process in production and observe it with a monitoring tool like [Nagios](https://www.nagios.org/), [Icinga](https://www.icinga.org/), [Monit](https://mmonit.com/monit/), [supervisord](http://supervisord.org/) or similar.
 
 ## Configuration
 
@@ -57,8 +57,8 @@ You can use the [config.json.dist](./config.json.dist) file as base.
   },
 ```
 
-All this settings mentioned above are necessary to use the twitter API and to setup a tweet by your application.
-You can get those settings by [twitters application management](https://apps.twitter.com/).
+All these settings mentioned above are necessary to use the Twitter API and to set up a tweet by your application.
+You can get those settings by [Twitter's application management](https://apps.twitter.com/).
 
 ### Redis
 
@@ -70,13 +70,13 @@ You can get those settings by [twitters application management](https://apps.twi
 ```
 
 *redis* contains the connection details to the [Redis](http://redis.io/) server.
-This Redis server is used as blacklisting of projects that was already tweeted.
+This Redis server is used for blacklisting projects that were already tweeted.
 
-**url** is the address of the redis server in format *ip:port*. 
+**url** is the address of the Redis server in format *ip:port*. 
 Example: *192.168.0.12:6379*.
-If your server is running on localhost you can use the shortcut of *:6379*.
+If your server is running on localhost you can use *:6379* as a shortcut.
 
-**auth** is the authentication string necessary for your redis server if you use the [Authentication feature](http://redis.io/topics/security#authentication-feature).
+**auth** is the authentication string necessary for your Redis server if you use the [Authentication feature](http://redis.io/topics/security#authentication-feature).
 
 ## License
 
