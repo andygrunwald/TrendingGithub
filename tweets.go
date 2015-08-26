@@ -61,6 +61,11 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 			break
 		}
 	}
+
+	// If we don`t find a tweet we need to send a empty project
+	// This is necessary to reschedule the search for a new repository
+	p := trending.Project{}
+	sendProject(tweetChan, p)
 }
 
 // timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
@@ -92,8 +97,14 @@ func timeframeLoopToSearchAProject(timeFrames []string, language string, trendin
 // sendProject puts the project we want to tweet into the tweet queue
 // If the queue is ready to receive a new project, this will be tweeted
 func sendProject(tweetChan chan *Tweet, p trending.Project) {
+	text := ""
+	// Only build tweet if necessary
+	if len(p.Name) > 0 {
+		text = buildTweet(p)
+	}
+
 	tweet := &Tweet{
-		Tweet:       buildTweet(p),
+		Tweet:       text,
 		ProjectName: p.Name,
 	}
 	tweetChan <- tweet
