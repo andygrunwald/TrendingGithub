@@ -136,7 +136,7 @@ func findProjectWithRandomProjectGenerator(getProject func() (trending.Project, 
 
 		// If the project was already tweeted
 		// we will skip this project and go to the next one
-		if alreadyTweeted > 0 {
+		if alreadyTweeted == true {
 			continue
 		}
 
@@ -218,7 +218,7 @@ func buildTweet(p trending.Project) string {
 
 // markTweetAsAlreadyTweeted adds a projectName to the global blacklist of already tweeted projects.
 // For this we use a Sorted Set where the score is the timestamp of the tweet.
-func markTweetAsAlreadyTweeted(projectName string, config *Configuration) (int, error) {
+func markTweetAsAlreadyTweeted(projectName string, config *Configuration) (bool, error) {
 	redisClient, err := NewRedisClient(&config.Redis)
 	if err != nil {
 		log.Fatal(err)
@@ -228,8 +228,8 @@ func markTweetAsAlreadyTweeted(projectName string, config *Configuration) (int, 
 	now := time.Now()
 	score := now.Format("20060102150405")
 
-	res, err := redisClient.AddRepositoryToTweetedList(projectName, score)
-	if err != nil || res != 1 {
+	res, err := redisClient.MarkRepositoryAsTweeted(projectName, score)
+	if err != nil || res != true {
 		log.Printf("Error during adding project %s to tweeted list: %s (%d)", projectName, err, res)
 	}
 

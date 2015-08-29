@@ -10,7 +10,10 @@ type Redis struct {
 }
 
 const (
-	projectKey = "tweeted-repositories"
+	// GreyListTTL defined the TTL of a repository in seconds: 1 month and 15 days (~45 days)
+	GreyListTTL = 60 * 60 * 24 * 45
+	// OK is the standard response of a Redis server if everything went fine
+	OK = "OK"
 )
 
 // NewRedisClient provides a new instance of a Redis connection
@@ -37,23 +40,22 @@ func NewRedisClient(config *RedisConfiguration) (*Redis, error) {
 	return r, nil
 }
 
-// AddRepositoryToTweetedList adds single projects to a "blacklist" in Redis.
-// This list will be used to check if this project was already tweeted.
-// The timestamp of the tweet will be used as score.
-// @link http://redis.io/commands#sorted_set
-func (r *Redis) AddRepositoryToTweetedList(projectName, score string) (int, error) {
-	return redis.Int(r.Client.Do("ZADD", projectKey, score, projectName))
+// MarkRepositoryAsTweeted marks a single projects as "already tweeted".
+// This information will be stored in Redis as a simple set with a TTL.
+// The timestamp of the tweet will be used as value.
+func (r *Redis) MarkRepositoryAsTweeted(projectName, score string) (bool, error) {
+	result, err := redis.String(r.Client.Do("SET", projectName, score, "EX", GreyListTTL, "NX"))
+	if result == OK && err == nil {
+		return true, err
+	}
+	return false, err
+
 }
 
-// IsRepositoryAlreadyTweeted is the "opposite" of AddRepositoryToTweetedList.
-// It checks if a project is a member of our "blacklist" set.
-// For this the score doesn`t matter.
-func (r *Redis) IsRepositoryAlreadyTweeted(projectName string) (int, error) {
-	val, err := r.Client.Do("ZSCORE", projectKey, projectName)
-
-	if val == nil {
-		return 0, err
-	}
-
-	return redis.Int(val, err)
+// IsRepositoryAlreadyTweeted checks if a project was already tweeted.
+// If it is not available
+//	a) the project was not tweeted yet
+//	b) the project ttl expired and is ready to tweet again
+func (r *Redis) IsRepositoryAlreadyTweeted(projectName string) (bool, error) {
+	return redis.Bool(r.Client.Do("EXISTS", projectName))
 }
