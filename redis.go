@@ -49,7 +49,6 @@ func (r *Redis) MarkRepositoryAsTweeted(projectName, score string) (bool, error)
 		return true, err
 	}
 	return false, err
-
 }
 
 // IsRepositoryAlreadyTweeted checks if a project was already tweeted.

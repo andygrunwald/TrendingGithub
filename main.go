@@ -82,21 +82,21 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 			log.Printf("Tweet: %s (length: %d)", tweet.Tweet, len(tweet.Tweet))
 
 		} else {
-			postedTweet, err := twitter.tweet(tweet.Tweet)
+			postedTweet, err := twitter.Tweet(tweet.Tweet)
 			if err != nil {
 				log.Println(err)
 			} else {
 				log.Printf("Tweet %s posted", postedTweet.IdStr)
 			}
 		}
-		markTweetAsAlreadyTweeted(tweet.ProjectName, config)
+		ts.MarkTweetAsAlreadyTweeted(tweet.ProjectName, config)
 	}
 }
 
 func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	go func() {
 		for _ = range time.Tick(tweetTimes) {
-			go tweetSearch.generateNewTweet()
+			go tweetSearch.GenerateNewTweet()
 		}
 	}()
 }

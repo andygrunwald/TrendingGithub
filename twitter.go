@@ -56,7 +56,7 @@ func (client *Twitter) SetupConfigurationRefresh(d time.Duration) {
 }
 
 // tweet will .... tweet the text :D ... Badumts
-func (client *Twitter) tweet(text string) (*anaconda.Tweet, error) {
+func (client *Twitter) Tweet(text string) (*anaconda.Tweet, error) {
 	v := url.Values{}
 	tweet, err := client.API.PostTweet(text, v)
 	if err != nil {

@@ -22,7 +22,7 @@ type Tweet struct {
 // generateNewTweet is responsible to search a new project / repository
 // and build a new tweet based on this.
 // The generated tweet will be sent to tweetChan.
-func (ts *TweetSearch) generateNewTweet() {
+func (ts *TweetSearch) GenerateNewTweet() {
 	var projectToTweet trending.Project
 	trendingClient := NewTrendingClient()
 	redisClient, err := NewRedisClient(&ts.Configuration.Redis)
@@ -35,11 +35,11 @@ func (ts *TweetSearch) generateNewTweet() {
 	ShuffleStringSlice(timeFrames)
 
 	// First get the timeframes without any languages
-	projectToTweet = ts.timeframeLoopToSearchAProject(timeFrames, "", trendingClient, redisClient)
+	projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, "", trendingClient, redisClient)
 
 	// Check if we found a project. If yes tweet it.
-	if ts.isProjectEmpty(projectToTweet) == false {
-		ts.sendProject(projectToTweet)
+	if ts.IsProjectEmpty(projectToTweet) == false {
+		ts.SendProject(projectToTweet)
 		return
 	}
 
@@ -49,11 +49,11 @@ func (ts *TweetSearch) generateNewTweet() {
 	ShuffleStringSlice(timeFrames)
 
 	for _, language := range languages {
-		projectToTweet = ts.timeframeLoopToSearchAProject(timeFrames, language, trendingClient, redisClient)
+		projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, language, trendingClient, redisClient)
 
 		// If we found a project, break this loop again.
-		if ts.isProjectEmpty(projectToTweet) == false {
-			ts.sendProject(projectToTweet)
+		if ts.IsProjectEmpty(projectToTweet) == false {
+			ts.SendProject(projectToTweet)
 			break
 		}
 	}
@@ -62,7 +62,7 @@ func (ts *TweetSearch) generateNewTweet() {
 // timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
 // to try to find a new tweet.
 // You can say that this is nearly the <3 of this bot.
-func (ts *TweetSearch) timeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
+func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
 	var projectToTweet trending.Project
 
 	for _, timeFrame := range timeFrames {
@@ -73,11 +73,11 @@ func (ts *TweetSearch) timeframeLoopToSearchAProject(timeFrames []string, langua
 		}
 
 		getProject := trendingClient.GetRandomProjectGenerator(timeFrame, language)
-		projectToTweet = findProjectWithRandomProjectGenerator(getProject, redisClient)
+		projectToTweet = ts.FindProjectWithRandomProjectGenerator(getProject, redisClient)
 
 		// Check if we found a project.
 		// If yes we can leave the loop and keep on rockin
-		if ts.isProjectEmpty(projectToTweet) == false {
+		if ts.IsProjectEmpty(projectToTweet) == false {
 			break
 		}
 	}
@@ -87,11 +87,11 @@ func (ts *TweetSearch) timeframeLoopToSearchAProject(timeFrames []string, langua
 
 // sendProject puts the project we want to tweet into the tweet queue
 // If the queue is ready to receive a new project, this will be tweeted
-func (ts *TweetSearch) sendProject(p trending.Project) {
+func (ts *TweetSearch) SendProject(p trending.Project) {
 	text := ""
 	// Only build tweet if necessary
 	if len(p.Name) > 0 {
-		text = ts.buildTweet(p)
+		text = ts.BuildTweet(p)
 	}
 
 	tweet := &Tweet{
@@ -102,7 +102,7 @@ func (ts *TweetSearch) sendProject(p trending.Project) {
 }
 
 // isProjectEmpty checks if the incoming project is empty
-func (ts *TweetSearch) isProjectEmpty(p trending.Project) bool {
+func (ts *TweetSearch) IsProjectEmpty(p trending.Project) bool {
 	if len(p.Name) > 0 {
 		return false
 	}
@@ -112,7 +112,7 @@ func (ts *TweetSearch) isProjectEmpty(p trending.Project) bool {
 
 // findProjectWithRandomProjectGenerator retrieves a new project and
 // checks if this was already tweeted.
-func findProjectWithRandomProjectGenerator(getProject func() (trending.Project, error), redisClient *Redis) trending.Project {
+func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (trending.Project, error), redisClient *Redis) trending.Project {
 	var projectToTweet trending.Project
 	var project trending.Project
 	var projectErr error
@@ -140,7 +140,7 @@ func findProjectWithRandomProjectGenerator(getProject func() (trending.Project, 
 }
 
 // buildTweet is responsible to build a 140 length string based on the project we found.
-func (ts *TweetSearch) buildTweet(p trending.Project) string {
+func (ts *TweetSearch) BuildTweet(p trending.Project) string {
 	tweet := ""
 
 	// Base length of a tweet
@@ -195,7 +195,7 @@ func (ts *TweetSearch) buildTweet(p trending.Project) string {
 
 // markTweetAsAlreadyTweeted adds a projectName to the global blacklist of already tweeted projects.
 // For this we use a Sorted Set where the score is the timestamp of the tweet.
-func markTweetAsAlreadyTweeted(projectName string, config *Configuration) (bool, error) {
+func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string, config *Configuration) (bool, error) {
 	redisClient, err := NewRedisClient(&config.Redis)
 	if err != nil {
 		log.Fatal(err)
