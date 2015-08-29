@@ -151,7 +151,8 @@ func (ts *TweetSearch) BuildTweet(p trending.Project) string {
 	// @link https://dev.twitter.com/overview/t.co
 	tweetLen -= ts.URLLength + 1
 
-	// Check if the length of the project name is > 114 chars
+	// Check if the length of the project name is bigger than the space in the tweet
+	// BUG(andygrunwald): If a name of a project got more chars as a tweet, we will generate a tweet without project name
 	if nameLen := len(p.Name); nameLen < tweetLen {
 		tweetLen -= len(p.Name)
 		tweet += p.Name
