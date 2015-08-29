@@ -51,13 +51,16 @@ func main() {
 // If we found a project, we will build the tweet and tweet it to our followers.
 // Because we love our followers ;)
 func StartTweeting(twitter *Twitter, config *Configuration) {
-	tweetChan := make(chan *Tweet)
-
 	// Setup tweet scheduling
-	SetupRegularTweetSearchProcess(tweetChan, config)
+	ts := &TweetSearch{
+		Channel:       make(chan *Tweet),
+		Configuration: config,
+		URLLength:     twitter.Configuration.ShortUrlLengthHttps,
+	}
+	SetupRegularTweetSearchProcess(ts)
 
 	// Waiting for tweets ...
-	for tweet := range tweetChan {
+	for tweet := range ts.Channel {
 		// Sometimes it happens that we won`t get a project.
 		// In this situation we try to avoid empty tweets like ...
 		//	* https://twitter.com/TrendingGithub/status/628714326564696064
@@ -74,7 +77,7 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 		// In debug mode the twitter variable is not available, so we won`t tweet the tweet.
 		// We will just output them.
 		// This is a good development feature ;)
-		if twitter == nil {
+		if twitter.API == nil {
 			log.Printf("Tweet: %s (length: %d)", tweet.Tweet, len(tweet.Tweet))
 
 		} else {
@@ -89,10 +92,10 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 	}
 }
 
-func SetupRegularTweetSearchProcess(tweetChan chan *Tweet, config *Configuration) {
+func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	go func() {
 		for _ = range time.Tick(tweetTimes) {
-			go generateNewTweet(tweetChan, config)
+			go tweetSearch.generateNewTweet()
 		}
 	}()
 }
@@ -109,8 +112,9 @@ func GetTwitterClient(config *Configuration, debug *bool) *Twitter {
 		// Refresh the configuration every day
 		twitter.SetupConfigurationRefresh(configurationRefreshTime)
 	} else {
-		// Setup dummy / debug configuration
-		twitter.Configuration = GetDebugConfiguration()
+		twitter = &Twitter{
+			Configuration: GetDebugConfiguration(),
+		}
 	}
 
 	return twitter

@@ -7,6 +7,12 @@ import (
 	"time"
 )
 
+type TweetSearch struct {
+	Channel       chan *Tweet
+	Configuration *Configuration
+	URLLength     int
+}
+
 // Tweet is a structure to store the tweet and the project name based on the tweet.
 type Tweet struct {
 	Tweet       string
@@ -16,20 +22,10 @@ type Tweet struct {
 // generateNewTweet is responsible to search a new project / repository
 // and build a new tweet based on this.
 // The generated tweet will be sent to tweetChan.
-func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
-	// TODO Make generation of trending project more intelligent.
-	// Currently we do:
-	// 		* Get all timeframes and get a random timeframe.
-	//		  Get projects based on this timeframe and check if we can tweet them.
-	//		  If this is not a success remove this timeframe from slice and continue.
-	//
-	// Steps to improve the area:
-	//		* If no project was chosen, lets get trending languages
-	//		  and chose one randomly and request the timeframes again
-	//		  and repeat the "slice from removes trick there"
+func (ts *TweetSearch) generateNewTweet() {
 	var projectToTweet trending.Project
 	trendingClient := NewTrendingClient()
-	redisClient, err := NewRedisClient(&config.Redis)
+	redisClient, err := NewRedisClient(&ts.Configuration.Redis)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,11 +35,11 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 	ShuffleStringSlice(timeFrames)
 
 	// First get the timeframes without any languages
-	projectToTweet = timeframeLoopToSearchAProject(timeFrames, "", trendingClient, redisClient)
+	projectToTweet = ts.timeframeLoopToSearchAProject(timeFrames, "", trendingClient, redisClient)
 
 	// Check if we found a project. If yes tweet it.
-	if isProjectEmpty(projectToTweet) == false {
-		sendProject(tweetChan, projectToTweet)
+	if ts.isProjectEmpty(projectToTweet) == false {
+		ts.sendProject(projectToTweet)
 		return
 	}
 
@@ -53,11 +49,11 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 	ShuffleStringSlice(timeFrames)
 
 	for _, language := range languages {
-		projectToTweet = timeframeLoopToSearchAProject(timeFrames, language, trendingClient, redisClient)
+		projectToTweet = ts.timeframeLoopToSearchAProject(timeFrames, language, trendingClient, redisClient)
 
 		// If we found a project, break this loop again.
-		if isProjectEmpty(projectToTweet) == false {
-			sendProject(tweetChan, projectToTweet)
+		if ts.isProjectEmpty(projectToTweet) == false {
+			ts.sendProject(projectToTweet)
 			break
 		}
 	}
@@ -66,7 +62,7 @@ func generateNewTweet(tweetChan chan *Tweet, config *Configuration) {
 // timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
 // to try to find a new tweet.
 // You can say that this is nearly the <3 of this bot.
-func timeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
+func (ts *TweetSearch) timeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
 	var projectToTweet trending.Project
 
 	for _, timeFrame := range timeFrames {
@@ -81,7 +77,7 @@ func timeframeLoopToSearchAProject(timeFrames []string, language string, trendin
 
 		// Check if we found a project.
 		// If yes we can leave the loop and keep on rockin
-		if isProjectEmpty(projectToTweet) == false {
+		if ts.isProjectEmpty(projectToTweet) == false {
 			break
 		}
 	}
@@ -91,22 +87,22 @@ func timeframeLoopToSearchAProject(timeFrames []string, language string, trendin
 
 // sendProject puts the project we want to tweet into the tweet queue
 // If the queue is ready to receive a new project, this will be tweeted
-func sendProject(tweetChan chan *Tweet, p trending.Project) {
+func (ts *TweetSearch) sendProject(p trending.Project) {
 	text := ""
 	// Only build tweet if necessary
 	if len(p.Name) > 0 {
-		text = buildTweet(p)
+		text = ts.buildTweet(p)
 	}
 
 	tweet := &Tweet{
 		Tweet:       text,
 		ProjectName: p.Name,
 	}
-	tweetChan <- tweet
+	ts.Channel <- tweet
 }
 
 // isProjectEmpty checks if the incoming project is empty
-func isProjectEmpty(p trending.Project) bool {
+func (ts *TweetSearch) isProjectEmpty(p trending.Project) bool {
 	if len(p.Name) > 0 {
 		return false
 	}
@@ -144,30 +140,16 @@ func findProjectWithRandomProjectGenerator(getProject func() (trending.Project, 
 }
 
 // buildTweet is responsible to build a 140 length string based on the project we found.
-func buildTweet(p trending.Project) string {
-	// TODO: We need to improve this.
-	// 		* Get the real number of chars for a URL for t.co.
-	//		* Get the length of the description and check if we need to trim this.
-	// 		* Try to put more information into it (like Language)
+func (ts *TweetSearch) buildTweet(p trending.Project) string {
 	tweet := ""
 
 	// Base length of a tweet
 	tweetLen := 140
 
-	// 25 letters for the url (+ 1 character for a whitespace)
-	// TODO: Daily GET call to help/configuration to receive max length for URL
-	// Only with this we are able to fill out 140 chars as max as possible.
+	// Number of letters for the url (+ 1 character for a whitespace)
+	// As URL shortener t.co from twitter is used
 	// @link https://dev.twitter.com/overview/t.co
-	// @link https://dev.twitter.com/rest/reference/get/help/configuration
-	//
-	// Currently this value is hardcoded.
-	// Anaconda (the twitter library we use) doesn`t support this yet.
-	// There is a pull request waiting: https://github.com/ChimeraCoder/anaconda/pull/66
-	// Today (2015-07-26) the values are
-	//	"short_url_length": 22,
-	//	"short_url_length_https": 23
-	// We choose a few chars more to get some more time until Anaconda accepts the PR
-	tweetLen -= 26
+	tweetLen -= ts.URLLength + 1
 
 	// Check if the length of the project name is > 114 chars
 	if nameLen := len(p.Name); nameLen < tweetLen {

@@ -7,6 +7,11 @@ import (
 	"time"
 )
 
+const (
+	// Set for debugging purpose
+	DebugURLLength = 25
+)
+
 // Twitter is the datastructure to store the twitter client
 type Twitter struct {
 	API           *anaconda.TwitterApi
