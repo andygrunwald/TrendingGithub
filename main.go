@@ -2,10 +2,7 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
-	"strconv"
 	"time"
 )
 
@@ -27,11 +24,6 @@ func main() {
 	// Check for configuration file
 	if len(*flagConfigFile) <= 0 {
 		log.Fatal("No configuration file found. Please add the --config parameter")
-	}
-
-	// PID-File
-	if len(*flagPidFile) > 0 {
-		ioutil.WriteFile(*flagPidFile, []byte(strconv.Itoa(os.Getpid())), 0644)
 	}
 
 	log.Println("Lets get ready to tweet trending content!")
