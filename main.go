@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	majorVersion = 0
-	minorVersion = 1
-	patchVersion = 0
-	tweetTimes   = 30 * time.Minute
-	// tweetTimes = 5 * time.Second
+	majorVersion             = 0
+	minorVersion             = 1
+	patchVersion             = 0
+	tweetTimes               = 30 * time.Minute
+	configurationRefreshTime = 24 * time.Hour
 )
 
 func main() {
@@ -52,18 +52,23 @@ func main() {
 func StartTweeting(config *Configuration, debug *bool) {
 	tweetChan := make(chan *Tweet)
 
-	// Schedule first tweet
-	time.AfterFunc(tweetTimes, func() {
-		generateNewTweet(tweetChan, config)
-	})
+	var twitter *Twitter
+	// If we are running in debug mode, we won`t tweet the tweet.
+	if *debug == false {
+		twitter = NewTwitterClient(&config.Twitter)
+		err := twitter.LoadConfiguration()
+		if err != nil {
+			log.Fatal("Twitter Configuration initialisation failed:", err)
+		}
+		// Refresh the configuration every day
+		twitter.SetupConfigurationRefresh(configurationRefreshTime)
+	}
+
+	// Setup tweet scheduling
+	SetupRegularTweetSearchProcess(tweetChan, config)
 
 	// Waiting for tweets ...
 	for tweet := range tweetChan {
-		// Schedule new tweet
-		time.AfterFunc(tweetTimes, func() {
-			generateNewTweet(tweetChan, config)
-		})
-
 		// Sometimes it happens that we won`t get a project.
 		// In this situation we try to avoid empty tweets like ...
 		//	* https://twitter.com/TrendingGithub/status/628714326564696064
@@ -77,14 +82,13 @@ func StartTweeting(config *Configuration, debug *bool) {
 			continue
 		}
 
-		// If we are running in debug mode, we won`t tweet the tweet.
+		// In debug mode the twitter variable is not available, so we won`t tweet the tweet.
 		// We will just output them.
 		// This is a good development feature ;)
-		if *debug {
+		if twitter == nil {
 			log.Printf("Tweet: %s (length: %d)", tweet.Tweet, len(tweet.Tweet))
 
 		} else {
-			twitter := NewTwitterClient(&config.Twitter)
 			postedTweet, err := twitter.tweet(tweet.Tweet)
 			if err != nil {
 				log.Println(err)
@@ -93,6 +97,13 @@ func StartTweeting(config *Configuration, debug *bool) {
 			}
 		}
 		markTweetAsAlreadyTweeted(tweet.ProjectName, config)
-
 	}
+}
+
+func SetupRegularTweetSearchProcess(tweetChan chan *Tweet, config *Configuration) {
+	go func() {
+		for _ = range time.Tick(tweetTimes) {
+			go generateNewTweet(tweetChan, config)
+		}
+	}()
 }
