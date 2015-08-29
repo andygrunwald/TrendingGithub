@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestIsProjectEmpty(t *testing.T) {
+func TestTweets_IsProjectEmpty(t *testing.T) {
 	ts := TweetSearch{}
 	mock := []struct {
 		Project trending.Project

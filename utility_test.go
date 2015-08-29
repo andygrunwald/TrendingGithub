@@ -6,7 +6,7 @@ import (
 
 var testSlice = []string{"one", "two", "three", "four"}
 
-func TestShuffleStringSlice_Length(t *testing.T) {
+func TestUtility_ShuffleStringSlice_Length(t *testing.T) {
 	shuffledSlice := make([]string, len(testSlice))
 	copy(shuffledSlice, testSlice)
 	ShuffleStringSlice(shuffledSlice)
@@ -16,7 +16,7 @@ func TestShuffleStringSlice_Length(t *testing.T) {
 	}
 }
 
-func TestShuffleStringSlice_Items(t *testing.T) {
+func TestUtility_ShuffleStringSlice_Items(t *testing.T) {
 	shuffledSlice := make([]string, len(testSlice))
 	copy(shuffledSlice, testSlice)
 	ShuffleStringSlice(shuffledSlice)
@@ -28,7 +28,7 @@ func TestShuffleStringSlice_Items(t *testing.T) {
 	}
 }
 
-func TestCrop(t *testing.T) {
+func TestUtility_Crop(t *testing.T) {
 	testSentence := "This is a test sentence for the unit test."
 	textMock := []struct {
 		Content     string

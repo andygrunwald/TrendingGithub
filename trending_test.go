@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestGetTimeFrames_Length(t *testing.T) {
+func TestTrending_GetTimeFrames_Length(t *testing.T) {
 	trend := Trend{}
 	timeFrames := trend.GetTimeFrames()
 

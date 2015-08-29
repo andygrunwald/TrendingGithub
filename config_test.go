@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestNewConfiguration_WithWrongFilenames(t *testing.T) {
+func TestConfig_NewConfiguration_WithWrongFilenames(t *testing.T) {
 	mockData := []struct {
 		Testcase string
 		FileName string
@@ -27,7 +27,7 @@ func TestNewConfiguration_WithWrongFilenames(t *testing.T) {
 
 }
 
-func TestNewConfiguration_WithExistingFile(t *testing.T) {
+func TestConfig_NewConfiguration_WithExistingFile(t *testing.T) {
 	configMock := &Configuration{
 		Twitter: TwitterConfiguration{
 			ConsumerKey:       "Consumer-Key-ABC",
