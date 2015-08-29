@@ -28,8 +28,8 @@ type RedisConfiguration struct {
 
 // NewConfiguration will provide a new instance of Configuration
 // configFile accepts a path to a configuration file based on config.json
-func NewConfiguration(configFile *string) (*Configuration, error) {
-	fileContent, err := ioutil.ReadFile(*configFile)
+func NewConfiguration(configFile string) (*Configuration, error) {
+	fileContent, err := ioutil.ReadFile(configFile)
 	if err != nil {
 		return nil, err
 	}

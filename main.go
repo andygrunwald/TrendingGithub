@@ -29,7 +29,7 @@ func main() {
 	log.Println("Lets get ready to tweet trending content!")
 	defer log.Println("Nice sesssion. A lot of knowledge was tweeted.")
 
-	config, err := NewConfiguration(flagConfigFile)
+	config, err := NewConfiguration(*flagConfigFile)
 	if err != nil {
 		log.Fatal("Configuration initialisation failed:", err)
 	}
