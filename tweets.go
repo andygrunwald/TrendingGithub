@@ -19,7 +19,7 @@ type Tweet struct {
 	ProjectName string
 }
 
-// generateNewTweet is responsible to search a new project / repository
+// GenerateNewTweet is responsible to search a new project / repository
 // and build a new tweet based on this.
 // The generated tweet will be sent to tweetChan.
 func (ts *TweetSearch) GenerateNewTweet() {
