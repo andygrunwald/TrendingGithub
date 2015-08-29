@@ -167,7 +167,7 @@ func (ts *TweetSearch) buildTweet(p trending.Project) string {
 		if len(p.Description) < tweetLen {
 			projectDescription = p.Description
 		} else {
-			projectDescription = crop(p.Description, (tweetLen - 4), "...", true)
+			projectDescription = Crop(p.Description, (tweetLen - 4), "...", true)
 		}
 
 		tweetLen -= len(projectDescription)

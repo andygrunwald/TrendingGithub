@@ -25,12 +25,12 @@ func ShuffleStringSlice(a []string) {
 //
 // This function is a port from the TYPO3 CMS (written in PHP)
 // @link https://github.com/TYPO3/TYPO3.CMS/blob/aae88a565bdbbb69032692f2d20da5f24d285cdc/typo3/sysext/frontend/Classes/ContentObject/ContentObjectRenderer.php#L4065
-func crop(content string, chars int, afterstring string, crop2space bool) string {
+func Crop(content string, chars int, afterstring string, crop2space bool) string {
 	if chars == 0 {
 		return content
 	}
 
-	if len(content) < chars {
+	if len(content) < chars || (chars < 0 && len(content) < (chars*-1)) {
 		return content
 	}
 
