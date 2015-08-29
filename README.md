@@ -23,18 +23,20 @@ TODO
 ## Usage
 
 ```
-$ TrendingGithub --help
-
+$ /TrendingGithub -help
 Usage of ./TrendingGithub:
-  --config="": Path to configuration file.
-  --debug: Outputs the tweet instead of tweet it. Useful for development.
-  --version: Outputs the version number and exits.
+  -config string
+    	Path to configuration file.
+  -debug
+    	Outputs the tweet instead of tweet it. Useful for development.
+  -version
+    	Outputs the version number and exits.
 ```
 
-The **--config** parameter is required.
+The **-config** parameter is required.
 See [Configuration chapter](https://github.com/andygrunwald/TrendingGithub#configuration) for details.
 
-**--debug** is quite useful for development.
+**-debug** is quite useful for development.
 It doesn`t output special information.
 It only avoids using the Twitter API for tweet purposes and outputs the tweet on stdout.
 
