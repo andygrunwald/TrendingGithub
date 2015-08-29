@@ -42,27 +42,16 @@ func main() {
 		log.Fatal("Configuration initialisation failed:", err)
 	}
 
-	StartTweeting(config, flagDebug)
+	twitter := GetTwitterClient(config, flagDebug)
+	StartTweeting(twitter, config)
 }
 
 // StartTweeting bundles the main logic of this bot.
 // It schedules the times when we are looking for a new project to tweet.
 // If we found a project, we will build the tweet and tweet it to our followers.
 // Because we love our followers ;)
-func StartTweeting(config *Configuration, debug *bool) {
+func StartTweeting(twitter *Twitter, config *Configuration) {
 	tweetChan := make(chan *Tweet)
-
-	var twitter *Twitter
-	// If we are running in debug mode, we won`t tweet the tweet.
-	if *debug == false {
-		twitter = NewTwitterClient(&config.Twitter)
-		err := twitter.LoadConfiguration()
-		if err != nil {
-			log.Fatal("Twitter Configuration initialisation failed:", err)
-		}
-		// Refresh the configuration every day
-		twitter.SetupConfigurationRefresh(configurationRefreshTime)
-	}
 
 	// Setup tweet scheduling
 	SetupRegularTweetSearchProcess(tweetChan, config)
@@ -106,4 +95,23 @@ func SetupRegularTweetSearchProcess(tweetChan chan *Tweet, config *Configuration
 			go generateNewTweet(tweetChan, config)
 		}
 	}()
+}
+
+func GetTwitterClient(config *Configuration, debug *bool) *Twitter {
+	var twitter *Twitter
+	// If we are running in debug mode, we won`t tweet the tweet.
+	if *debug == false {
+		twitter = NewTwitterClient(&config.Twitter)
+		err := twitter.LoadConfiguration()
+		if err != nil {
+			log.Fatal("Twitter Configuration initialisation failed:", err)
+		}
+		// Refresh the configuration every day
+		twitter.SetupConfigurationRefresh(configurationRefreshTime)
+	} else {
+		// Setup dummy / debug configuration
+		twitter.Configuration = GetDebugConfiguration()
+	}
+
+	return twitter
 }

@@ -60,3 +60,10 @@ func (client *Twitter) tweet(text string) (*anaconda.Tweet, error) {
 
 	return &tweet, nil
 }
+
+func GetDebugConfiguration() *anaconda.Configuration {
+	return &anaconda.Configuration{
+		ShortUrlLength:      24,
+		ShortUrlLengthHttps: 25,
+	}
+}
