@@ -60,8 +60,7 @@ func (t *Trend) GetRandomProjectGenerator(timeFrame, language string) func() (tr
 
 	// Get projects based on timeframe
 	// This makes the initial HTTP call to github.
-	githubTrending := trending.NewTrending()
-	projects, err = githubTrending.GetProjects(timeFrame, language)
+	projects, err = t.Client.GetProjects(timeFrame, language)
 	if err != nil {
 		return func() (trending.Project, error) {
 			return trending.Project{}, err
