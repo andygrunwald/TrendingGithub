@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/andygrunwald/TrendingGithub/storage"
 	"github.com/andygrunwald/go-trending"
+	"github.com/google/go-github/github"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -88,7 +90,14 @@ func (ts *TweetSearch) SendProject(p trending.Project) {
 	text := ""
 	// Only build tweet if necessary
 	if len(p.Name) > 0 {
-		text = ts.BuildTweet(p)
+		// This is a really hack here ...
+		// We have to abstract this a little bit.
+		// Eieieieiei
+		splittedName := strings.SplitAfterN(p.Name, "/", 2)
+		splittedName[0] = splittedName[0][:len(splittedName[0])-1]
+		repository, _ := GetRepositoryDetails(splittedName[0], splittedName[1])
+
+		text = ts.BuildTweet(p, repository)
 	}
 
 	tweet := &Tweet{
@@ -140,15 +149,14 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 }
 
 // buildTweet is responsible to build a 140 length string based on the project we found.
-func (ts *TweetSearch) BuildTweet(p trending.Project) string {
+func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) string {
 	tweet := ""
-
 	// Base length of a tweet
 	tweetLen := 140
 
 	// Number of letters for the url (+ 1 character for a whitespace)
 	// As URL shortener t.co from twitter is used
-	// @link https://dev.twitter.com/overview/t.co
+	// URLLength will be constantly refreshed
 	tweetLen -= ts.URLLength + 1
 
 	// Check if the length of the project name is bigger than the space in the tweet
@@ -159,10 +167,10 @@ func (ts *TweetSearch) BuildTweet(p trending.Project) string {
 	}
 
 	// We only post a description if we got more than 20 charactes available
-	// We have to add 3 chars more, because of the prefix " - "
-	if tweetLen > 23 && len(p.Description) > 0 {
-		tweetLen -= 3
-		tweet += " - "
+	// We have to add 2 chars more, because of the prefix ": "
+	if tweetLen > 22 && len(p.Description) > 0 {
+		tweetLen -= 2
+		tweet += ": "
 
 		projectDescription := ""
 		if len(p.Description) < tweetLen {
@@ -173,6 +181,12 @@ func (ts *TweetSearch) BuildTweet(p trending.Project) string {
 
 		tweetLen -= len(projectDescription)
 		tweet += projectDescription
+	}
+
+	stars := strconv.Itoa(*repo.StargazersCount)
+	if starsLen := len(stars) + 2; tweetLen >= starsLen {
+		tweet += " ★" + stars
+		tweetLen -= starsLen
 	}
 
 	// Lets add the URL, but we don`t need to substract the chars
