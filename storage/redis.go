@@ -7,7 +7,7 @@ import (
 
 const (
 	// OK is the standard response of a Redis server if everything went fine
-	OK = "OK"
+	RedisOK = "OK"
 )
 
 type RedisStorage struct{}
@@ -72,7 +72,7 @@ func (rc *RedisConnection) Close() error {
 // The timestamp of the tweet will be used as value.
 func (rc *RedisConnection) MarkRepositoryAsTweeted(projectName, score string) (bool, error) {
 	result, err := redis.String(rc.conn.Do("SET", projectName, score, "EX", GreyListTTL, "NX"))
-	if result == OK && err == nil {
+	if result == RedisOK && err == nil {
 		return true, err
 	}
 	return false, err
