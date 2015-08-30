@@ -32,6 +32,12 @@ func (rs *RedisStorage) NewPool(url, auth string) Pool {
 				if err != nil {
 					return nil, err
 				}
+
+				// If we don`t have an auth set, we don`t have to call redis
+				if len(auth) == 0 {
+					return c, err
+				}
+
 				if _, err := c.Do("AUTH", auth); err != nil {
 					c.Close()
 					return nil, err
@@ -63,38 +69,6 @@ func (rc *RedisConnection) Close() error {
 	return rc.conn.Close()
 }
 
-// Redis contains the connection to the redis server
-/*
-type Redis struct {
-	Client redis.Conn
-}
-*/
-
-/*
-// NewRedisClient provides a new instance of a Redis connection
-func NewRedisClient(config *RedisConfiguration) (*Redis, error) {
-	redisClient, err := redis.Dial("tcp", config.URL)
-	if err != nil {
-		return nil, err
-	}
-
-	r := &Redis{
-		Client: redisClient,
-	}
-
-	// If the redis server isn`t protected by an Auth, we are done here.
-	if len(config.Auth) == 0 {
-		return r, nil
-	}
-
-	if _, err := r.Client.Do("AUTH", config.Auth); err != nil {
-		r.Client.Close()
-		return nil, err
-	}
-
-	return r, nil
-}
-*/
 // MarkRepositoryAsTweeted marks a single projects as "already tweeted".
 // This information will be stored in Redis as a simple set with a TTL.
 // The timestamp of the tweet will be used as value.

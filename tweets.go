@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/andygrunwald/TrendingGithub/storage"
 	"github.com/andygrunwald/go-trending"
 	"log"
 	"strings"
@@ -10,6 +11,7 @@ import (
 type TweetSearch struct {
 	Channel       chan *Tweet
 	Trending      *Trend
+	Storage       storage.Pool
 	Configuration *RedisConfiguration
 	URLLength     int
 }
@@ -25,17 +27,13 @@ type Tweet struct {
 // The generated tweet will be sent to tweetChan.
 func (ts *TweetSearch) GenerateNewTweet() {
 	var projectToTweet trending.Project
-	redisClient, err := NewRedisClient(ts.Configuration)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// Get timeframes and randomize them
 	timeFrames := ts.Trending.GetTimeFrames()
 	ShuffleStringSlice(timeFrames)
 
 	// First get the timeframes without any languages
-	projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, "", redisClient)
+	projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, "")
 
 	// Check if we found a project. If yes tweet it.
 	if ts.IsProjectEmpty(projectToTweet) == false {
@@ -49,7 +47,7 @@ func (ts *TweetSearch) GenerateNewTweet() {
 	ShuffleStringSlice(timeFrames)
 
 	for _, language := range languages {
-		projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, language, redisClient)
+		projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, language)
 
 		// If we found a project, break this loop again.
 		if ts.IsProjectEmpty(projectToTweet) == false {
@@ -62,7 +60,7 @@ func (ts *TweetSearch) GenerateNewTweet() {
 // timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
 // to try to find a new tweet.
 // You can say that this is nearly the <3 of this bot.
-func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, language string, redisClient *Redis) trending.Project {
+func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, language string) trending.Project {
 	var projectToTweet trending.Project
 
 	for _, timeFrame := range timeFrames {
@@ -73,7 +71,7 @@ func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, langua
 		}
 
 		getProject := ts.Trending.GetRandomProjectGenerator(timeFrame, language)
-		projectToTweet = ts.FindProjectWithRandomProjectGenerator(getProject, redisClient)
+		projectToTweet = ts.FindProjectWithRandomProjectGenerator(getProject)
 
 		// Check if we found a project.
 		// If yes we can leave the loop and keep on rockin
@@ -112,14 +110,17 @@ func (ts *TweetSearch) IsProjectEmpty(p trending.Project) bool {
 
 // findProjectWithRandomProjectGenerator retrieves a new project and
 // checks if this was already tweeted.
-func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (trending.Project, error), redisClient *Redis) trending.Project {
+func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (trending.Project, error)) trending.Project {
 	var projectToTweet trending.Project
 	var project trending.Project
 	var projectErr error
 
+	storageConn := ts.Storage.Get()
+	defer storageConn.Close()
+
 	for project, projectErr = getProject(); projectErr == nil; project, projectErr = getProject() {
 		// Check if the project was already tweeted
-		alreadyTweeted, err := redisClient.IsRepositoryAlreadyTweeted(project.Name)
+		alreadyTweeted, err := storageConn.IsRepositoryAlreadyTweeted(project.Name)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -197,16 +198,14 @@ func (ts *TweetSearch) BuildTweet(p trending.Project) string {
 // markTweetAsAlreadyTweeted adds a projectName to the global blacklist of already tweeted projects.
 // For this we use a Sorted Set where the score is the timestamp of the tweet.
 func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, error) {
-	redisClient, err := NewRedisClient(ts.Configuration)
-	if err != nil {
-		log.Fatal(err)
-	}
+	storageConn := ts.Storage.Get()
+	defer storageConn.Close()
 
 	// Generate score in format YYYYMMDDHHiiss
 	now := time.Now()
 	score := now.Format("20060102150405")
 
-	res, err := redisClient.MarkRepositoryAsTweeted(projectName, score)
+	res, err := storageConn.MarkRepositoryAsTweeted(projectName, score)
 	if err != nil || res != true {
 		log.Printf("Error during adding project %s to tweeted list: %s (%d)", projectName, err, res)
 	}

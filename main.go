@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/andygrunwald/TrendingGithub/storage"
 	"log"
 	"time"
 )
@@ -52,11 +53,16 @@ func main() {
 // If we found a project, we will build the tweet and tweet it to our followers.
 // Because we love our followers ;)
 func StartTweeting(twitter *Twitter, config *Configuration) {
+	redisStorage := storage.RedisStorage{}
+	redisPool := redisStorage.NewPool(config.Redis.URL, config.Redis.Auth)
+	defer redisPool.Close()
+
 	// Setup tweet scheduling
 	ts := &TweetSearch{
 		Channel:       make(chan *Tweet),
 		Configuration: &config.Redis,
 		Trending:      NewTrendingClient(),
+		Storage:       redisPool,
 		URLLength:     twitter.Configuration.ShortUrlLengthHttps,
 	}
 	SetupRegularTweetSearchProcess(ts)
