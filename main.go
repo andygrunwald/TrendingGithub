@@ -9,9 +9,8 @@ import (
 )
 
 const (
-	majorVersion             = 0
-	minorVersion             = 1
-	patchVersion             = 0
+	// Version of @TrendingGithub
+	Version                  = "0.2.0"
 	tweetTimes               = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
 )
@@ -27,7 +26,7 @@ func main() {
 
 	// Output the version and exit
 	if *flagVersion {
-		fmt.Printf("@TrendingGithub v%d.%d.%d\n", majorVersion, minorVersion, patchVersion)
+		fmt.Printf("@TrendingGithub v%s\n", Version)
 		return
 	}
 
