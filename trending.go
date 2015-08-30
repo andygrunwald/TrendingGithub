@@ -6,10 +6,15 @@ import (
 	"math/rand"
 )
 
+type TrendingClient interface {
+	GetTrendingLanguages() ([]trending.Language, error)
+	GetProjects(time, language string) ([]trending.Project, error)
+}
+
 // Trend is the datastructure to hold a github-trending client.
 // This will be used to retrieve trending projects
 type Trend struct {
-	Client *trending.Trending
+	Client TrendingClient
 }
 
 // NewTrendingClient will provide a new instance of Trend.
