@@ -5,15 +5,17 @@ import (
 )
 
 var (
-	testProjectName = "andygrunwald/TrendingGithub"
+	memoryTestProjectName = "andygrunwald/TrendingGithub"
 )
 
 func TestMemory_MarkRepositoryAsTweeted(t *testing.T) {
 	storage := MemoryStorage{}
 	pool := storage.NewPool("", "")
+	defer pool.Close()
 	conn := pool.Get()
+	defer conn.Close()
 
-	res, err := conn.MarkRepositoryAsTweeted(testProjectName, "1440946305")
+	res, err := conn.MarkRepositoryAsTweeted(memoryTestProjectName, "1440946305")
 	if err != nil {
 		t.Fatalf("Error of marking repository: \"%s\"", err)
 	}
@@ -26,9 +28,11 @@ func TestMemory_MarkRepositoryAsTweeted(t *testing.T) {
 func TestMemory_IsRepositoryAlreadyTweeted(t *testing.T) {
 	storage := MemoryStorage{}
 	pool := storage.NewPool("", "")
+	defer pool.Close()
 	conn := pool.Get()
+	defer conn.Close()
 
-	res, err := conn.IsRepositoryAlreadyTweeted(testProjectName)
+	res, err := conn.IsRepositoryAlreadyTweeted(memoryTestProjectName)
 	if err != nil {
 		t.Fatalf("First already tweeted check throws an error: \"%s\"", err)
 	}
@@ -36,7 +40,7 @@ func TestMemory_IsRepositoryAlreadyTweeted(t *testing.T) {
 		t.Fatal("Repository was already tweeted, got true, expected false")
 	}
 
-	res, err = conn.MarkRepositoryAsTweeted(testProjectName, "1440946884")
+	res, err = conn.MarkRepositoryAsTweeted(memoryTestProjectName, "1440946884")
 	if err != nil {
 		t.Fatalf("Error of marking repository: \"%s\"", err)
 	}
@@ -45,7 +49,7 @@ func TestMemory_IsRepositoryAlreadyTweeted(t *testing.T) {
 		t.Fatal("Marking repositoriy failed, got false, expected true")
 	}
 
-	res, err = conn.IsRepositoryAlreadyTweeted(testProjectName)
+	res, err = conn.IsRepositoryAlreadyTweeted(memoryTestProjectName)
 	if err != nil {
 		t.Fatalf("Second already tweeted check throws an error: \"%s\"", err)
 	}
