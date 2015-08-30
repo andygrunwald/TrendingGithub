@@ -9,6 +9,7 @@ import (
 
 type TweetSearch struct {
 	Channel       chan *Tweet
+	Trending      *Trend
 	Configuration *Configuration
 	URLLength     int
 }
@@ -24,18 +25,17 @@ type Tweet struct {
 // The generated tweet will be sent to tweetChan.
 func (ts *TweetSearch) GenerateNewTweet() {
 	var projectToTweet trending.Project
-	trendingClient := NewTrendingClient()
 	redisClient, err := NewRedisClient(&ts.Configuration.Redis)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Get timeframes and randomize them
-	timeFrames := trendingClient.GetTimeFrames()
+	timeFrames := ts.Trending.GetTimeFrames()
 	ShuffleStringSlice(timeFrames)
 
 	// First get the timeframes without any languages
-	projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, "", trendingClient, redisClient)
+	projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, "", redisClient)
 
 	// Check if we found a project. If yes tweet it.
 	if ts.IsProjectEmpty(projectToTweet) == false {
@@ -44,12 +44,12 @@ func (ts *TweetSearch) GenerateNewTweet() {
 	}
 
 	// If not, keep going and try to get some (trending) languages
-	languages := trendingClient.GetTrendingLanguages()
+	languages := ts.Trending.GetTrendingLanguages()
 	ShuffleStringSlice(languages)
 	ShuffleStringSlice(timeFrames)
 
 	for _, language := range languages {
-		projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, language, trendingClient, redisClient)
+		projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, language, redisClient)
 
 		// If we found a project, break this loop again.
 		if ts.IsProjectEmpty(projectToTweet) == false {
@@ -62,7 +62,7 @@ func (ts *TweetSearch) GenerateNewTweet() {
 // timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
 // to try to find a new tweet.
 // You can say that this is nearly the <3 of this bot.
-func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, language string, trendingClient *Trend, redisClient *Redis) trending.Project {
+func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, language string, redisClient *Redis) trending.Project {
 	var projectToTweet trending.Project
 
 	for _, timeFrame := range timeFrames {
@@ -72,7 +72,7 @@ func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, langua
 			log.Printf("Getting projects for timeframe %s", timeFrame)
 		}
 
-		getProject := trendingClient.GetRandomProjectGenerator(timeFrame, language)
+		getProject := ts.Trending.GetRandomProjectGenerator(timeFrame, language)
 		projectToTweet = ts.FindProjectWithRandomProjectGenerator(getProject, redisClient)
 
 		// Check if we found a project.

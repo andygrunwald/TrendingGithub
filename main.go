@@ -56,6 +56,7 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 	ts := &TweetSearch{
 		Channel:       make(chan *Tweet),
 		Configuration: config,
+		Trending:      NewTrendingClient(),
 		URLLength:     twitter.Configuration.ShortUrlLengthHttps,
 	}
 	SetupRegularTweetSearchProcess(ts)
