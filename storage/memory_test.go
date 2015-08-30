@@ -8,7 +8,7 @@ var (
 	testProjectName = "andygrunwald/TrendingGithub"
 )
 
-func TestMarkRepositoryAsTweeted(t *testing.T) {
+func TestMemory_MarkRepositoryAsTweeted(t *testing.T) {
 	storage := MemoryStorage{}
 	pool := storage.NewPool("", "")
 	conn := pool.Get()
@@ -23,7 +23,7 @@ func TestMarkRepositoryAsTweeted(t *testing.T) {
 	}
 }
 
-func TestIsRepositoryAlreadyTweeted(t *testing.T) {
+func TestMemory_IsRepositoryAlreadyTweeted(t *testing.T) {
 	storage := MemoryStorage{}
 	pool := storage.NewPool("", "")
 	conn := pool.Get()
