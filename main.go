@@ -11,8 +11,9 @@ import (
 const (
 	// Version of @TrendingGithub
 	Version                  = "0.2.0"
-	tweetTimes               = 30 * time.Minute
+	tweetTime                = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
+	followNewPersonTime      = 45 * time.Minute
 )
 
 func main() {
@@ -112,7 +113,7 @@ func StartTweeting(twitter *Twitter, storageBackend storage.Pool) {
 
 func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	go func() {
-		for _ = range time.Tick(tweetTimes) {
+		for _ = range time.Tick(tweetTime) {
 			go tweetSearch.GenerateNewTweet()
 		}
 	}()
@@ -142,6 +143,7 @@ func GetTwitterClient(config *TwitterConfiguration, debug *bool) *Twitter {
 		}
 		// Refresh the configuration every day
 		twitter.SetupConfigurationRefresh(configurationRefreshTime)
+		twitter.SetupFollowNewPeopleScheduling(followNewPersonTime)
 	} else {
 		twitter = &Twitter{
 			Configuration: GetDebugConfiguration(),
