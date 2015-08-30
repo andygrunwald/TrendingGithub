@@ -59,11 +59,10 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 
 	// Setup tweet scheduling
 	ts := &TweetSearch{
-		Channel:       make(chan *Tweet),
-		Configuration: &config.Redis,
-		Trending:      NewTrendingClient(),
-		Storage:       redisPool,
-		URLLength:     twitter.Configuration.ShortUrlLengthHttps,
+		Channel:   make(chan *Tweet),
+		Trending:  NewTrendingClient(),
+		Storage:   redisPool,
+		URLLength: twitter.Configuration.ShortUrlLengthHttps,
 	}
 	SetupRegularTweetSearchProcess(ts)
 

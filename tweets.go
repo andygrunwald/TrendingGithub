@@ -9,11 +9,10 @@ import (
 )
 
 type TweetSearch struct {
-	Channel       chan *Tweet
-	Trending      *Trend
-	Storage       storage.Pool
-	Configuration *RedisConfiguration
-	URLLength     int
+	Channel   chan *Tweet
+	Trending  *Trend
+	Storage   storage.Pool
+	URLLength int
 }
 
 // Tweet is a structure to store the tweet and the project name based on the tweet.
