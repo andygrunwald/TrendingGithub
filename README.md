@@ -1,14 +1,15 @@
-# TrendingGithub
+# [@TrendingGithub](https://twitter.com/TrendingGithub)
 
 [![Build Status](https://travis-ci.org/andygrunwald/TrendingGithub.svg?branch=master)](https://travis-ci.org/andygrunwald/TrendingGithub)
 [![Coverage Status](https://coveralls.io/repos/andygrunwald/TrendingGithub/badge.svg?branch=master&service=github)](https://coveralls.io/github/andygrunwald/TrendingGithub?branch=master)
 
 A twitter bot (**[@TrendingGithub](https://twitter.com/TrendingGithub)**) to tweet [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) from GitHub.
-Follow us at **[@TrendingGithub](https://twitter.com/TrendingGithub)**.
+
+> Follow us at **[@TrendingGithub](https://twitter.com/TrendingGithub)**.
 
 [![@TrendingGithub twitter account](./img/TrendingGithub.png "@TrendingGithub twitter account")](https://twitter.com/TrendingGithub)
 
-**Important note:** This is no official GitHub or Twitter product.
+**Important:** This is no official GitHub or Twitter product.
 
 ## Motivation
 
@@ -19,12 +20,23 @@ Why not combine both to save time, favorite projects and developers and spread t
 
 ## Installation
 
-TODO
+1. Download the [latest release](https://github.com/andygrunwald/TrendingGithub/releases/latest).
+2. Extract the archive (zip / tar.gz)
+3. Start the bot: `./TrendingGithub -debug`
+
+For linux this can look like:
+
+```sh
+curl -L  https://github.com/andygrunwald/TrendingGithub/releases/download/v0.1.0/TrendingGithub-v0.1.0-linux-amd64.tar.gz -o TrendingGithub-v0.1.0-linux-amd64.tar.gz
+tar xzvf TrendingGithub-v0.1.0-linux-amd64.tar.gz
+cd TrendingGithub-v0.1.0-linux-amd64
+./TrendingGithub -debug
+```
 
 ## Usage
 
 ```
-$ /TrendingGithub -help
+$ ./TrendingGithub -help
 Usage of ./TrendingGithub:
   -config string
     	Path to configuration file.
