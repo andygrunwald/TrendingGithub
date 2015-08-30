@@ -20,7 +20,7 @@ Why not combine both to save time, favorite projects and developers and spread t
 
 ## Installation
 
-1. Download the [latest release](https://github.com/andygrunwald/TrendingGithub/releases/latest).
+1. Download the [latest release](https://github.com/andygrunwald/TrendingGithub/releases/latest)
 2. Extract the archive (zip / tar.gz)
 3. Start the bot: `./TrendingGithub -debug`
 
