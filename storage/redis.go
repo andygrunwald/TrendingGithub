@@ -6,8 +6,6 @@ import (
 )
 
 const (
-	// GreyListTTL defined the TTL of a repository in seconds: 1 month and 15 days (~45 days)
-	GreyListTTL = 60 * 60 * 24 * 45
 	// OK is the standard response of a Redis server if everything went fine
 	OK = "OK"
 )

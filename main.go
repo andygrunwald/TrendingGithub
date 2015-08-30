@@ -31,9 +31,13 @@ func main() {
 		return
 	}
 
-	// Check for configuration file
-	if len(*flagConfigFile) <= 0 {
+	// Check for configuration file if we are in production (non debug) mode
+	if *flagDebug == false && len(*flagConfigFile) <= 0 {
 		log.Fatal("No configuration file found. Please add the --config parameter")
+	}
+
+	if *flagDebug == true {
+		*flagConfigFile = "./config.json.dist"
 	}
 
 	log.Println("Lets get ready to tweet trending content!")
@@ -45,23 +49,23 @@ func main() {
 	}
 
 	twitter := GetTwitterClient(&config.Twitter, flagDebug)
-	StartTweeting(twitter, config)
+	storageBackend := GetStorageBackend(&config.Redis, flagDebug)
+	defer storageBackend.Close()
+
+	StartTweeting(twitter, storageBackend)
 }
 
 // StartTweeting bundles the main logic of this bot.
 // It schedules the times when we are looking for a new project to tweet.
 // If we found a project, we will build the tweet and tweet it to our followers.
 // Because we love our followers ;)
-func StartTweeting(twitter *Twitter, config *Configuration) {
-	redisStorage := storage.RedisStorage{}
-	redisPool := redisStorage.NewPool(config.Redis.URL, config.Redis.Auth)
-	defer redisPool.Close()
+func StartTweeting(twitter *Twitter, storageBackend storage.Pool) {
 
 	// Setup tweet scheduling
 	ts := &TweetSearch{
 		Channel:   make(chan *Tweet),
 		Trending:  NewTrendingClient(),
-		Storage:   redisPool,
+		Storage:   storageBackend,
 		URLLength: twitter.Configuration.ShortUrlLengthHttps,
 	}
 	SetupRegularTweetSearchProcess(ts)
@@ -105,6 +109,19 @@ func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 			go tweetSearch.GenerateNewTweet()
 		}
 	}()
+}
+
+func GetStorageBackend(config *RedisConfiguration, debug *bool) storage.Pool {
+	var pool storage.Pool
+	if *debug == false {
+		storage := storage.RedisStorage{}
+		pool = storage.NewPool(config.URL, config.Auth)
+	} else {
+		storage := storage.MemoryStorage{}
+		pool = storage.NewPool("", "")
+	}
+
+	return pool
 }
 
 func GetTwitterClient(config *TwitterConfiguration, debug *bool) *Twitter {
