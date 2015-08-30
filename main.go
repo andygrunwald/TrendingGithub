@@ -55,7 +55,7 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 	// Setup tweet scheduling
 	ts := &TweetSearch{
 		Channel:       make(chan *Tweet),
-		Configuration: config,
+		Configuration: &config.Redis,
 		Trending:      NewTrendingClient(),
 		URLLength:     twitter.Configuration.ShortUrlLengthHttps,
 	}
@@ -90,7 +90,7 @@ func StartTweeting(twitter *Twitter, config *Configuration) {
 				log.Printf("Tweet %s posted", postedTweet.IdStr)
 			}
 		}
-		ts.MarkTweetAsAlreadyTweeted(tweet.ProjectName, config)
+		ts.MarkTweetAsAlreadyTweeted(tweet.ProjectName)
 	}
 }
 

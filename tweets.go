@@ -10,7 +10,7 @@ import (
 type TweetSearch struct {
 	Channel       chan *Tweet
 	Trending      *Trend
-	Configuration *Configuration
+	Configuration *RedisConfiguration
 	URLLength     int
 }
 
@@ -25,7 +25,7 @@ type Tweet struct {
 // The generated tweet will be sent to tweetChan.
 func (ts *TweetSearch) GenerateNewTweet() {
 	var projectToTweet trending.Project
-	redisClient, err := NewRedisClient(&ts.Configuration.Redis)
+	redisClient, err := NewRedisClient(ts.Configuration)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -196,8 +196,8 @@ func (ts *TweetSearch) BuildTweet(p trending.Project) string {
 
 // markTweetAsAlreadyTweeted adds a projectName to the global blacklist of already tweeted projects.
 // For this we use a Sorted Set where the score is the timestamp of the tweet.
-func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string, config *Configuration) (bool, error) {
-	redisClient, err := NewRedisClient(&config.Redis)
+func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, error) {
+	redisClient, err := NewRedisClient(ts.Configuration)
 	if err != nil {
 		log.Fatal(err)
 	}
