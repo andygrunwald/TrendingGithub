@@ -18,7 +18,7 @@ A twitter bot (**[@TrendingGithub](https://twitter.com/TrendingGithub)**) to twe
 * Greylisting of repositories for 45 days (to avoid tweeting a project multiple times in a short timeframe)
 * Maximum use of 140 chars per tweet to fill up with information
 * Debug / development mode
-* Multiple storage backends (currently Redis)
+* Multiple storage backends (currently [Redis](http://redis.io/) and in memory)
 
 ## Motivation
 
