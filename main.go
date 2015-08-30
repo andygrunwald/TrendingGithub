@@ -43,7 +43,7 @@ func main() {
 		log.Fatal("Configuration initialisation failed:", err)
 	}
 
-	twitter := GetTwitterClient(config, flagDebug)
+	twitter := GetTwitterClient(&config.Twitter, flagDebug)
 	StartTweeting(twitter, config)
 }
 
@@ -101,11 +101,11 @@ func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	}()
 }
 
-func GetTwitterClient(config *Configuration, debug *bool) *Twitter {
+func GetTwitterClient(config *TwitterConfiguration, debug *bool) *Twitter {
 	var twitter *Twitter
 	// If we are running in debug mode, we won`t tweet the tweet.
 	if *debug == false {
-		twitter = NewTwitterClient(&config.Twitter)
+		twitter = NewTwitterClient(config)
 		err := twitter.LoadConfiguration()
 		if err != nil {
 			log.Fatal("Twitter Configuration initialisation failed:", err)
