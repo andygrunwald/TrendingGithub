@@ -31,21 +31,29 @@ func main() {
 		return
 	}
 
+	log.Println("Hey, nice to meet you. My name is @TrendingGithub. Lets get ready to tweet some trending content!")
+	defer log.Println("Nice sesssion. A lot of knowledge was tweeted. Good work and see you next time!")
+
 	// Check for configuration file if we are in production (non debug) mode
 	if *flagDebug == false && len(*flagConfigFile) <= 0 {
-		log.Fatal("No configuration file found. Please add the --config parameter")
+		log.Println()
+		log.Println("Oh no :(")
+		log.Println("I can`t find a configuration file.")
+		log.Println("You can help me by using the -config parameter.")
+		log.Fatal("As an alternative you can run in -debug mode. Try it out!")
 	}
 
 	if *flagDebug == true {
 		*flagConfigFile = "./config.json.dist"
 	}
 
-	log.Println("Lets get ready to tweet trending content!")
-	defer log.Println("Nice sesssion. A lot of knowledge was tweeted.")
-
 	config, err := NewConfiguration(*flagConfigFile)
 	if err != nil {
-		log.Fatal("Configuration initialisation failed:", err)
+		log.Println()
+		log.Println("Oh no :(")
+		log.Printf("I found the configuration file \"%s\", but i was not able to load it.", *flagConfigFile)
+		log.Println("Maybe this can help you to fix it:")
+		log.Fatalf(" > %s", err)
 	}
 
 	twitter := GetTwitterClient(&config.Twitter, flagDebug)
