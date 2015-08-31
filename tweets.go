@@ -93,9 +93,7 @@ func (ts *TweetSearch) SendProject(p trending.Project) {
 		// This is a really hack here ...
 		// We have to abstract this a little bit.
 		// Eieieieiei
-		splittedName := strings.SplitAfterN(p.Name, "/", 2)
-		splittedName[0] = splittedName[0][:len(splittedName[0])-1]
-		repository, _ := GetRepositoryDetails(splittedName[0], splittedName[1])
+		repository, _ := GetRepositoryDetails(p.Owner, p.RepositoryName)
 
 		text = ts.BuildTweet(p, repository)
 	}
