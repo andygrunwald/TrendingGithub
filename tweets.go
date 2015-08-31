@@ -163,8 +163,9 @@ func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) s
 	if p.Owner == p.RepositoryName {
 		usedName = p.RepositoryName
 	}
+
 	// Check if the length of the project name is bigger than the space in the tweet
-	// BUG(andygrunwald): If a name of a project got more chars as a tweet, we will generate a tweet without project name
+	// Max length of a project name on github is 100 chars
 	if nameLen := len(usedName); nameLen < tweetLen {
 		tweetLen -= nameLen
 		tweet += usedName
