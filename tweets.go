@@ -217,7 +217,7 @@ func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, erro
 
 	res, err := storageConn.MarkRepositoryAsTweeted(projectName, score)
 	if err != nil || res != true {
-		log.Printf("Error during adding project %s to tweeted list: %s (%d)", projectName, err, res)
+		log.Printf("Error during adding project %s to tweeted list: %s (%v)", projectName, err, res)
 	}
 
 	return res, err
