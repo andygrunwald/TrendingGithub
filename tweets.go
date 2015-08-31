@@ -156,11 +156,18 @@ func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) s
 	// URLLength will be constantly refreshed
 	tweetLen -= ts.URLLength + 1
 
+	// Sometimes the owner name is the same as the repository name
+	// Like FreeCodeCamp / FreeCodeCamp, docker/docker or flarum / flarum
+	// In such cases we will drop the owner name and just use the repository name.
+	usedName := p.Name
+	if p.Owner == p.RepositoryName {
+		usedName = p.RepositoryName
+	}
 	// Check if the length of the project name is bigger than the space in the tweet
 	// BUG(andygrunwald): If a name of a project got more chars as a tweet, we will generate a tweet without project name
-	if nameLen := len(p.Name); nameLen < tweetLen {
-		tweetLen -= len(p.Name)
-		tweet += p.Name
+	if nameLen := len(usedName); nameLen < tweetLen {
+		tweetLen -= nameLen
+		tweet += usedName
 	}
 
 	// We only post a description if we got more than 20 charactes available

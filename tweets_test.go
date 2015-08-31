@@ -26,7 +26,9 @@ func TestTweets_IsProjectEmpty(t *testing.T) {
 }
 
 func TestTweets_BuildTweet(t *testing.T) {
-	projectName := "andygrunwald/TrendingGithub"
+	owner := "andygrunwald"
+	repositoryName := "TrendingGithub"
+	projectName := owner + "/" + repositoryName
 	projectURL, _ := url.Parse("https://github.com/andygrunwald/TrendingGithub")
 	projectDescription := "A twitter bot (@TrendingGithub) to tweet trending repositories and developers from GitHub"
 
@@ -53,34 +55,52 @@ func TestTweets_BuildTweet(t *testing.T) {
 			}, "andygrunwald/TrendingGithub - A twitter bot (@TrendingGithub) to tweet trending repositories and developers... https://github.com/andygrunwald/TrendingGithub #Go"},
 		*/
 		{trending.Project{
-			Name:        "SuperDuperOwnerOrOrganisation/This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project",
-			Description: projectDescription + " and more and better and super duper text",
-			Language:    "Go",
-			URL:         projectURL,
+			Name:           "SuperDuperOwnerOrOrganisation/This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project",
+			Owner:          "SuperDuperOwnerOrOrganisation",
+			RepositoryName: "This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project",
+			Description:    projectDescription + " and more and better and super duper text",
+			Language:       "Go",
+			URL:            projectURL,
 		}, "SuperDuperOwnerOrOrganisation/This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
 		{trending.Project{
-			Name:        projectName + "-cool-super-project",
-			Description: projectDescription + " and more and better and super duper text",
-			Language:    "Go",
-			URL:         projectURL,
+			Name:           projectName + "-cool-super-project",
+			Owner:          owner,
+			RepositoryName: repositoryName + "-cool-super-project",
+			Description:    projectDescription + " and more and better and super duper text",
+			Language:       "Go",
+			URL:            projectURL,
 		}, "andygrunwald/TrendingGithub-cool-super-project: A twitter bot (@TrendingGithub) to tweet trending... ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
 		{trending.Project{
-			Name:        projectName,
-			Description: projectDescription,
-			Language:    "Go",
-			URL:         projectURL,
+			Name:           projectName,
+			Owner:          owner,
+			RepositoryName: repositoryName,
+			Description:    projectDescription,
+			Language:       "Go",
+			URL:            projectURL,
 		}, "andygrunwald/TrendingGithub: A twitter bot (@TrendingGithub) to tweet trending repositories and developers... ★123 https://github.com/andygrunwald/TrendingGithub"},
 		{trending.Project{
-			Name:        projectName,
-			Description: "Short description",
-			Language:    "Go Lang",
-			URL:         projectURL,
+			Name:           projectName,
+			Owner:          owner,
+			RepositoryName: repositoryName,
+			Description:    "Short description",
+			Language:       "Go Lang",
+			URL:            projectURL,
 		}, "andygrunwald/TrendingGithub: Short description ★123 https://github.com/andygrunwald/TrendingGithub #GoLang"},
 		{trending.Project{
-			Name:        projectName,
-			Description: "Project without a URL",
-			Language:    "Go Lang",
+			Name:           projectName,
+			Owner:          owner,
+			RepositoryName: repositoryName,
+			Description:    "Project without a URL",
+			Language:       "Go Lang",
 		}, "andygrunwald/TrendingGithub: Project without a URL ★123 #GoLang"},
+		{trending.Project{
+			Name:           repositoryName + "/" + repositoryName,
+			Owner:          repositoryName,
+			RepositoryName: repositoryName,
+			Description:    projectDescription,
+			Language:       "Go",
+			URL:            projectURL,
+		}, "TrendingGithub: A twitter bot (@TrendingGithub) to tweet trending repositories and developers from GitHub ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
 	}
 
 	for _, item := range mock {
