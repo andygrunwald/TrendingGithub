@@ -114,8 +114,7 @@ func (ts *TweetSearch) IsProjectEmpty(p trending.Project) bool {
 	return true
 }
 
-// findProjectWithRandomProjectGenerator retrieves a new project and
-// checks if this was already tweeted.
+// FindProjectWithRandomProjectGenerator retrieves a new project and checks if this was already tweeted.
 func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (trending.Project, error)) trending.Project {
 	var projectToTweet trending.Project
 	var project trending.Project
