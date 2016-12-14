@@ -1,8 +1,0 @@
-{
-  "twitter": {
-    "consumer-key": "Consumer-Key-ABC",
-    "consumer-secret": "Consumer-Secret-DEF",
-    "access-token": "Access-Token-Foo",
-    "access-token-secret": "Access-Token-Bar"
-  }
-}

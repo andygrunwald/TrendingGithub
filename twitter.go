@@ -33,10 +33,10 @@ type Twitter struct {
 }
 
 // NewTwitterClient returns a new client to communicate with twitter (obvious, right?)
-func NewTwitterClient(config *TwitterConfiguration) *Twitter {
-	anaconda.SetConsumerKey(config.ConsumerKey)
-	anaconda.SetConsumerSecret(config.ConsumerSecret)
-	api := anaconda.NewTwitterApi(config.AccessToken, config.AccessTokenSecret)
+func NewTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string) *Twitter {
+	anaconda.SetConsumerKey(consumerKey)
+	anaconda.SetConsumerSecret(consumerSecret)
+	api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
 
 	client := Twitter{
 		API:   api,

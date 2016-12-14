@@ -21,9 +21,16 @@ const (
 
 func main() {
 	var (
-		flagConfigFile = flags.String("config", "TRENDINGGITHUB_CONFIG", "", "Path to configuration file.")
+		// Twitter
+		twitterConsumerKey     = flags.String("twitter-consumer-key", "TRENDINGGITHUB_TWITTER_CONSUMER_KEY", "", "Twitter-API: Consumer key")
+		twitterConsumerSecret     = flags.String("twitter-consumer-secret", "TRENDINGGITHUB_TWITTER_CONSUMER_SECRET", "", "Twitter-API: Consumer secret")
+		twitterAccessToken     = flags.String("twitter-access-token", "TRENDINGGITHUB_TWITTER_ACCESS_TOKEN", "", "Twitter-API: Access token")
+		twitterAccessTokenSecret     = flags.String("twitter-access-token-secret", "TRENDINGGITHUB_TWITTER_ACCESS_TOKEN_SECRET", "", "Twitter-API: Access token secret")
+
+		// Redis storage
 		storageURL     = flags.String("storage-url", "TRENDINGGITHUB_STORAGE_URL", "", "Storage URL (e.g. 1.2.3.4:6379 or :6379")
 		storageAuth    = flags.String("storage-auth", "TRENDINGGITHUB_STORAGE_AUTH", "", "Storage Auth (e.g. myPassword or <empty>")
+
 		flagVersion    = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit")
 		flagDebug      = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it. Useful for development.")
 	)
@@ -38,29 +45,7 @@ func main() {
 	log.Println("Hey, nice to meet you. My name is @TrendingGithub. Lets get ready to tweet some trending content!")
 	defer log.Println("Nice sesssion. A lot of knowledge was tweeted. Good work and see you next time!")
 
-	// Check for configuration file if we are in production (non debug) mode
-	if *flagDebug == false && len(*flagConfigFile) <= 0 {
-		log.Println()
-		log.Println("Oh no :(")
-		log.Println("I can`t find a configuration file.")
-		log.Println("You can help me by using the -config parameter.")
-		log.Fatal("As an alternative you can run in -debug mode. Try it out!")
-	}
-
-	if *flagDebug == true {
-		*flagConfigFile = "./config.json.dist"
-	}
-
-	config, err := NewConfiguration(*flagConfigFile)
-	if err != nil {
-		log.Println()
-		log.Println("Oh no :(")
-		log.Printf("I found the configuration file \"%s\", but i was not able to load it.", *flagConfigFile)
-		log.Println("Maybe this can help you to fix it:")
-		log.Fatalf(" > %s", err)
-	}
-
-	twitter := GetTwitterClient(&config.Twitter, flagDebug)
+	twitter := GetTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, flagDebug)
 	storageBackend := GetStorageBackend(*storageURL, *storageAuth, flagDebug)
 	defer storageBackend.Close()
 
@@ -136,11 +121,11 @@ func GetStorageBackend(storageURL string, storageAuth string, debug *bool) stora
 	return pool
 }
 
-func GetTwitterClient(config *TwitterConfiguration, debug *bool) *Twitter {
+func GetTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug *bool) *Twitter {
 	var twitter *Twitter
 	// If we are running in debug mode, we won`t tweet the tweet.
 	if *debug == false {
-		twitter = NewTwitterClient(config)
+		twitter = NewTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
 		err := twitter.LoadConfiguration()
 		if err != nil {
 			log.Fatal("Twitter Configuration initialisation failed:", err)
