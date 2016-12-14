@@ -3,14 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/andygrunwald/TrendingGithub/storage"
 	"log"
 	"time"
+
+	"github.com/andygrunwald/TrendingGithub/storage"
+	"github.com/andygrunwald/TrendingGithub/flags"
 )
 
 const (
 	// Version of @TrendingGithub
 	Version                  = "0.2.0"
+
 	tweetTime                = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
 	followNewPersonTime      = 45 * time.Minute
@@ -18,11 +21,10 @@ const (
 
 func main() {
 	var (
-		flagConfigFile = flag.String("config", "", "Path to configuration file.")
-		flagVersion    = flag.Bool("version", false, "Outputs the version number and exits.")
-		flagDebug      = flag.Bool("debug", false, "Outputs the tweet instead of tweet it. Useful for development.")
+		flagConfigFile = flags.String("config", "TRENDINGGITHUB_CONFIG", "", "Path to configuration file.")
+		flagVersion    = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit")
+		flagDebug      = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it. Useful for development.")
 	)
-
 	flag.Parse()
 
 	// Output the version and exit
