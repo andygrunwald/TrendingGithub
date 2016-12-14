@@ -35,10 +35,6 @@ func TestConfig_NewConfiguration_WithExistingFile(t *testing.T) {
 			AccessToken:       "Access-Token-Foo",
 			AccessTokenSecret: "Access-Token-Bar",
 		},
-		Redis: RedisConfiguration{
-			URL:  "127.0.0.1:6379",
-			Auth: "My-Secret-Password",
-		},
 	}
 
 	c, err := NewConfiguration("./tests/config.json")

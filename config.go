@@ -9,7 +9,6 @@ import (
 // This structure reflects the config.json file
 type Configuration struct {
 	Twitter TwitterConfiguration `json:"twitter"`
-	Redis   RedisConfiguration   `json:"redis"`
 }
 
 // TwitterConfiguration is the configuration structure for the twitter connection.
@@ -18,12 +17,6 @@ type TwitterConfiguration struct {
 	ConsumerSecret    string `json:"consumer-secret"`
 	AccessToken       string `json:"access-token"`
 	AccessTokenSecret string `json:"access-token-secret"`
-}
-
-// RedisConfiguration is the configuration structure for the redis connection.
-type RedisConfiguration struct {
-	URL  string `json:"url"`
-	Auth string `json:"auth"`
 }
 
 // NewConfiguration will provide a new instance of Configuration

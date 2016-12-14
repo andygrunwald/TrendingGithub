@@ -6,8 +6,4 @@
         <access-token>ACCESS-TOKEN</access-token>
         <access-token-secret>ACCESS-TOKEN-SECRET</access-token-secret>
     </twitter>
-    <redis>
-        <url>127.0.0.1:6379</url>
-        <auth></auth>
-    </redis>
 </root>

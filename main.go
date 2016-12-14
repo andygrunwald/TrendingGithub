@@ -6,13 +6,13 @@ import (
 	"log"
 	"time"
 
-	"github.com/andygrunwald/TrendingGithub/storage"
 	"github.com/andygrunwald/TrendingGithub/flags"
+	"github.com/andygrunwald/TrendingGithub/storage"
 )
 
 const (
 	// Version of @TrendingGithub
-	Version                  = "0.2.0"
+	Version = "0.2.0"
 
 	tweetTime                = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
@@ -22,6 +22,8 @@ const (
 func main() {
 	var (
 		flagConfigFile = flags.String("config", "TRENDINGGITHUB_CONFIG", "", "Path to configuration file.")
+		storageURL     = flags.String("storage-url", "TRENDINGGITHUB_STORAGE_URL", "", "Storage URL (e.g. 1.2.3.4:6379 or :6379")
+		storageAuth    = flags.String("storage-auth", "TRENDINGGITHUB_STORAGE_AUTH", "", "Storage Auth (e.g. myPassword or <empty>")
 		flagVersion    = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit")
 		flagDebug      = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it. Useful for development.")
 	)
@@ -59,7 +61,7 @@ func main() {
 	}
 
 	twitter := GetTwitterClient(&config.Twitter, flagDebug)
-	storageBackend := GetStorageBackend(&config.Redis, flagDebug)
+	storageBackend := GetStorageBackend(*storageURL, *storageAuth, flagDebug)
 	defer storageBackend.Close()
 
 	StartTweeting(twitter, storageBackend)
@@ -121,11 +123,11 @@ func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	}()
 }
 
-func GetStorageBackend(config *RedisConfiguration, debug *bool) storage.Pool {
+func GetStorageBackend(storageURL string, storageAuth string, debug *bool) storage.Pool {
 	var pool storage.Pool
 	if *debug == false {
 		storage := storage.RedisStorage{}
-		pool = storage.NewPool(config.URL, config.Auth)
+		pool = storage.NewPool(storageURL, storageAuth)
 	} else {
 		storage := storage.MemoryStorage{}
 		pool = storage.NewPool("", "")
