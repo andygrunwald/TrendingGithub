@@ -8,6 +8,7 @@ import (
 
 	"github.com/andygrunwald/TrendingGithub/flags"
 	"github.com/andygrunwald/TrendingGithub/storage"
+	"github.com/andygrunwald/TrendingGithub/twitter"
 )
 
 const (
@@ -56,7 +57,7 @@ func main() {
 // It schedules the times when we are looking for a new project to tweet.
 // If we found a project, we will build the tweet and tweet it to our followers.
 // Because we love our followers ;)
-func StartTweeting(twitter *Twitter, storageBackend storage.Pool) {
+func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool) {
 
 	// Setup tweet scheduling
 	ts := &TweetSearch{
@@ -121,23 +122,23 @@ func GetStorageBackend(storageURL string, storageAuth string, debug *bool) stora
 	return pool
 }
 
-func GetTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug *bool) *Twitter {
-	var twitter *Twitter
+func GetTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug *bool) *twitter.Twitter {
+	var client *twitter.Twitter
 	// If we are running in debug mode, we won`t tweet the tweet.
 	if *debug == false {
-		twitter = NewTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
-		err := twitter.LoadConfiguration()
+		client = twitter.NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+		err := client.LoadConfiguration()
 		if err != nil {
 			log.Fatal("Twitter Configuration initialisation failed:", err)
 		}
 		// Refresh the configuration every day
-		twitter.SetupConfigurationRefresh(configurationRefreshTime)
-		twitter.SetupFollowNewPeopleScheduling(followNewPersonTime)
+		client.SetupConfigurationRefresh(configurationRefreshTime)
+		client.SetupFollowNewPeopleScheduling(followNewPersonTime)
 	} else {
-		twitter = &Twitter{
-			Configuration: GetDebugConfiguration(),
+		client = &twitter.Twitter{
+			Configuration: twitter.GetDebugConfiguration(),
 		}
 	}
 
-	return twitter
+	return client
 }

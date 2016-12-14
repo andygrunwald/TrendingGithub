@@ -1,4 +1,4 @@
-package main
+package twitter
 
 import (
 	"github.com/ChimeraCoder/anaconda"
@@ -32,8 +32,8 @@ type Twitter struct {
 	Mutex         *sync.Mutex
 }
 
-// NewTwitterClient returns a new client to communicate with twitter (obvious, right?)
-func NewTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string) *Twitter {
+// NewClient returns a new client to communicate with twitter (obvious, right?)
+func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string) *Twitter {
 	anaconda.SetConsumerKey(consumerKey)
 	anaconda.SetConsumerSecret(consumerSecret)
 	api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
