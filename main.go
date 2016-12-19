@@ -8,6 +8,7 @@ import (
 
 	"github.com/andygrunwald/TrendingGithub/flags"
 	"github.com/andygrunwald/TrendingGithub/storage"
+	trendingwrap "github.com/andygrunwald/TrendingGithub/trending"
 	"github.com/andygrunwald/TrendingGithub/twitter"
 )
 
@@ -73,7 +74,7 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool) {
 	// Setup tweet scheduling
 	ts := &TweetSearch{
 		Channel:   make(chan *Tweet),
-		Trending:  NewTrendingClient(),
+		Trending:  trendingwrap.NewTrendingClient(),
 		Storage:   storageBackend,
 		URLLength: twitter.Configuration.ShortUrlLengthHttps,
 	}

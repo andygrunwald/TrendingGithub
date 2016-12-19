@@ -7,13 +7,14 @@ import (
 	"time"
 
 	"github.com/andygrunwald/TrendingGithub/storage"
+	trendingwrap "github.com/andygrunwald/TrendingGithub/trending"
 	"github.com/andygrunwald/go-trending"
 	"github.com/google/go-github/github"
 )
 
 type TweetSearch struct {
 	Channel   chan *Tweet
-	Trending  *Trend
+	Trending  *trendingwrap.Trend
 	Storage   storage.Pool
 	URLLength int
 }
