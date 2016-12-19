@@ -89,7 +89,7 @@ At the moment there are two backends implemented:
 ## Growth hack
 
 We implemented a small growth hack to get a few followers.
-This hack was suggested by my colleague @mre.
+This hack was suggested by my colleague [@mre](https://github.com/mre).
 It works like described:
 
 * Get all followers from @TrendingGithub
