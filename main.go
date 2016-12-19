@@ -54,11 +54,11 @@ func main() {
 	twitterClient.SetupConfigurationRefresh(configurationRefreshTime)
 
 	// Activate our growth hack feature
-	if twitterFollowNewPerson {
+	if *twitterFollowNewPerson {
 		twitterClient.SetupFollowNewPeopleScheduling(followNewPersonTime)
 	}
 
-	storageBackend := GetStorageBackend(*storageURL, *storageAuth, flagDebug)
+	storageBackend := storage.GetBackend(*storageURL, *storageAuth, flagDebug)
 	defer storageBackend.Close()
 
 	StartTweeting(twitterClient, storageBackend)
@@ -118,17 +118,4 @@ func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 			go tweetSearch.GenerateNewTweet()
 		}
 	}()
-}
-
-func GetStorageBackend(storageURL string, storageAuth string, debug *bool) storage.Pool {
-	var pool storage.Pool
-	if *debug == false {
-		storage := storage.RedisStorage{}
-		pool = storage.NewPool(storageURL, storageAuth)
-	} else {
-		storage := storage.MemoryStorage{}
-		pool = storage.NewPool("", "")
-	}
-
-	return pool
 }

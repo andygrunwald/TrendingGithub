@@ -43,7 +43,7 @@ func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret strin
 		anaconda.SetConsumerKey(consumerKey)
 		anaconda.SetConsumerSecret(consumerSecret)
 		api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
-		client = Twitter{
+		client = &Twitter{
 			API:   api,
 			Mutex: &sync.Mutex{},
 		}

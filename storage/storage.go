@@ -29,3 +29,16 @@ type Connection interface {
 	//	b) the project ttl expired and is ready to tweet again
 	IsRepositoryAlreadyTweeted(projectName string) (bool, error)
 }
+
+func GetBackend(storageURL string, storageAuth string, debug *bool) Pool {
+	var pool Pool
+	if *debug == false {
+		storageBackend := RedisStorage{}
+		pool = storageBackend.NewPool(storageURL, storageAuth)
+	} else {
+		storageBackend := MemoryStorage{}
+		pool = storageBackend.NewPool("", "")
+	}
+
+	return pool
+}
