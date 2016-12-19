@@ -74,13 +74,6 @@ The Redis url (`storage-url`)is the address of the Redis server in format *ip:po
 If your server is running on localhost you can use *:6379* as a shortcut.
 `storage-auth` is the authentication string necessary for your Redis server if you use the [Authentication feature](http://redis.io/topics/security#authentication-feature).
 
-## Motivation
-
-I love to discover new tools, new projects, new languages, new coding best practices, new exciting ideas and new people who share the same passion like me.
-[I use twitter a lot](https://twitter.com/andygrunwald) and have little time to check [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) on a daily basis.
-
-Why not combine both to save time and spread favorite projects and developers via tweets?
-
 ## Storage backends
 
 Why is a storage backend needed at all?
@@ -93,9 +86,29 @@ At the moment there are two backends implemented:
 * Memory (used in development)
 * Redis (used in production)
 
+## Growth hack
+
+We implemented a small growth hack to get a few followers.
+This hack was suggested by my colleague @mre.
+It works like described:
+
+* Get all followers from @TrendingGithub
+* Choose a random one and get the followers of the choosen person
+* Check if this person follows us already
+* If yes, repeat
+* If no, follow this person
+
+This feature can be activated via the `twitter-follow-new-person` flag.
+
+## Motivation
+
+I love to discover new tools, new projects, new languages, new coding best practices, new exciting ideas and new people who share the same passion like me.
+[I use twitter a lot](https://twitter.com/andygrunwald) and have little time to check [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) on a daily basis.
+
+Why not combine both to save time and spread favorite projects and developers via tweets?
+
 ## TODO
 
-* Readme: Explain the growth hack
 * Code: Extend logging
 * Code: Add expvar support
 * Code: Documentation
