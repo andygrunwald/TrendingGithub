@@ -1,13 +1,14 @@
 package twitter
 
 import (
-	"github.com/ChimeraCoder/anaconda"
 	"math/rand"
 	"net/url"
 	"strconv"
 	"sync"
 	"time"
 	"log"
+
+	"github.com/ChimeraCoder/anaconda"
 )
 
 const (

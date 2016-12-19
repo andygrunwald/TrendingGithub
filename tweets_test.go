@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/andygrunwald/go-trending"
-	"github.com/google/go-github/github"
 	"net/url"
 	"testing"
+
+	"github.com/andygrunwald/go-trending"
+	"github.com/google/go-github/github"
 )
 
 func TestTweets_IsProjectEmpty(t *testing.T) {

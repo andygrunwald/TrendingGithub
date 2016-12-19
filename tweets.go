@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/andygrunwald/TrendingGithub/storage"
-	"github.com/andygrunwald/go-trending"
-	"github.com/google/go-github/github"
 	"log"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/andygrunwald/TrendingGithub/storage"
+	"github.com/andygrunwald/go-trending"
+	"github.com/google/go-github/github"
 )
 
 type TweetSearch struct {

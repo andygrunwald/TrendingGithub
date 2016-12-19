@@ -2,8 +2,9 @@ package main
 
 import (
 	"errors"
-	"github.com/andygrunwald/go-trending"
 	"math/rand"
+
+	"github.com/andygrunwald/go-trending"
 )
 
 type TrendingClient interface {
