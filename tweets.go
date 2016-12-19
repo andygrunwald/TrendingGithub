@@ -123,6 +123,9 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 	storageConn := ts.Storage.Get()
 	defer storageConn.Close()
 
+	// TODO Lets throw an error, when we dont get a project at all
+	// This happened in the past and the bot tweeted nothing.
+
 	for project, projectErr = getProject(); projectErr == nil; project, projectErr = getProject() {
 		// Check if the project was already tweeted
 		alreadyTweeted, err := storageConn.IsRepositoryAlreadyTweeted(project.Name)
