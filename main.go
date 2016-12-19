@@ -8,7 +8,6 @@ import (
 
 	"github.com/andygrunwald/TrendingGithub/flags"
 	"github.com/andygrunwald/TrendingGithub/storage"
-	trendingwrap "github.com/andygrunwald/TrendingGithub/trending"
 	"github.com/andygrunwald/TrendingGithub/twitter"
 )
 
