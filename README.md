@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/andygrunwald/TrendingGithub.svg?branch=master)](https://travis-ci.org/andygrunwald/TrendingGithub)
 [![GoDoc](https://godoc.org/github.com/andygrunwald/TrendingGithub?status.svg)](https://godoc.org/github.com/andygrunwald/TrendingGithub)
 [![Coverage Status](https://coveralls.io/repos/andygrunwald/TrendingGithub/badge.svg?branch=master&service=github)](https://coveralls.io/github/andygrunwald/TrendingGithub?branch=master)
+[![Go Report Card](https://goreportcard.com/badge/github.com/andygrunwald/TrendingGithub)](https://goreportcard.com/report/github.com/andygrunwald/TrendingGithub)
 
 A twitter bot (**[@TrendingGithub](https://twitter.com/TrendingGithub)**) to tweet [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) from GitHub.
 
