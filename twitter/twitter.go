@@ -11,8 +11,6 @@ import (
 )
 
 const (
-	// Set for debugging purpose
-	DebugURLLength = 25
 	// Status "none" of GET friendships/lookup call
 	// @link https://dev.twitter.com/rest/reference/get/friendships/lookup
 	TwitterStatusNone = "none"
@@ -26,7 +24,7 @@ type TwitterAPI interface {
 	FollowUserId(userId int64, v url.Values) (user anaconda.User, err error)
 }
 
-// Twitter is the datastructure to store the twitter client
+// Twitter is the data structure to store the twitter client
 type Twitter struct {
 	API           TwitterAPI
 	Configuration *anaconda.Configuration
