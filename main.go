@@ -15,7 +15,8 @@ const (
 	// Version of @TrendingGithub
 	Version = "0.2.0"
 
-	tweetTime                = 30 * time.Minute
+	tweetTime                = 5 * time.Second
+	//tweetTime                = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
 	followNewPersonTime      = 45 * time.Minute
 )
@@ -27,6 +28,7 @@ func main() {
 		twitterConsumerSecret     = flags.String("twitter-consumer-secret", "TRENDINGGITHUB_TWITTER_CONSUMER_SECRET", "", "Twitter-API: Consumer secret")
 		twitterAccessToken     = flags.String("twitter-access-token", "TRENDINGGITHUB_TWITTER_ACCESS_TOKEN", "", "Twitter-API: Access token")
 		twitterAccessTokenSecret     = flags.String("twitter-access-token-secret", "TRENDINGGITHUB_TWITTER_ACCESS_TOKEN_SECRET", "", "Twitter-API: Access token secret")
+		twitterFollowNewPerson    = flags.Bool("twitter-follow-new-person", "TRENDINGGITHUB_TWITTER_FOLLOW_NEW_PERSON", false, "Twitter: Follows a friend of one of our followers")
 
 		// Redis storage
 		storageURL     = flags.String("storage-url", "TRENDINGGITHUB_STORAGE_URL", "", "Storage URL (e.g. 1.2.3.4:6379 or :6379")
@@ -46,11 +48,20 @@ func main() {
 	log.Println("Hey, nice to meet you. My name is @TrendingGithub. Lets get ready to tweet some trending content!")
 	defer log.Println("Nice sesssion. A lot of knowledge was tweeted. Good work and see you next time!")
 
-	twitter := GetTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, flagDebug)
+	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, flagDebug)
+
+	// Refresh the configuration every day
+	twitterClient.SetupConfigurationRefresh(configurationRefreshTime)
+
+	// Activate our growth hack feature
+	if twitterFollowNewPerson {
+		twitterClient.SetupFollowNewPeopleScheduling(followNewPersonTime)
+	}
+
 	storageBackend := GetStorageBackend(*storageURL, *storageAuth, flagDebug)
 	defer storageBackend.Close()
 
-	StartTweeting(twitter, storageBackend)
+	StartTweeting(twitterClient, storageBackend)
 }
 
 // StartTweeting bundles the main logic of this bot.
@@ -120,25 +131,4 @@ func GetStorageBackend(storageURL string, storageAuth string, debug *bool) stora
 	}
 
 	return pool
-}
-
-func GetTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug *bool) *twitter.Twitter {
-	var client *twitter.Twitter
-	// If we are running in debug mode, we won`t tweet the tweet.
-	if *debug == false {
-		client = twitter.NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
-		err := client.LoadConfiguration()
-		if err != nil {
-			log.Fatal("Twitter Configuration initialisation failed:", err)
-		}
-		// Refresh the configuration every day
-		client.SetupConfigurationRefresh(configurationRefreshTime)
-		client.SetupFollowNewPeopleScheduling(followNewPersonTime)
-	} else {
-		client = &twitter.Twitter{
-			Configuration: twitter.GetDebugConfiguration(),
-		}
-	}
-
-	return client
 }

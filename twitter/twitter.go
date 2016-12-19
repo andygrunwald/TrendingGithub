@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"sync"
 	"time"
+	"log"
 )
 
 const (
@@ -33,17 +34,30 @@ type Twitter struct {
 }
 
 // NewClient returns a new client to communicate with twitter (obvious, right?)
-func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string) *Twitter {
-	anaconda.SetConsumerKey(consumerKey)
-	anaconda.SetConsumerSecret(consumerSecret)
-	api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
+func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug *bool) *Twitter {
+	var client *Twitter
+	// If we are running in debug mode, we won`t tweet the tweet.
+	if *debug == false {
 
-	client := Twitter{
-		API:   api,
-		Mutex: &sync.Mutex{},
+		// Create anaconda client
+		anaconda.SetConsumerKey(consumerKey)
+		anaconda.SetConsumerSecret(consumerSecret)
+		api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
+		client = Twitter{
+			API:   api,
+			Mutex: &sync.Mutex{},
+		}
+		err := client.LoadConfiguration()
+		if err != nil {
+			log.Fatal("Twitter Configuration initialisation failed:", err)
+		}
+	} else {
+		client = &Twitter{
+			Configuration: GetDebugConfiguration(),
+		}
 	}
 
-	return &client
+	return client
 }
 
 func (client *Twitter) LoadConfiguration() error {
