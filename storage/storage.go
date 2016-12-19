@@ -30,9 +30,9 @@ type Connection interface {
 	IsRepositoryAlreadyTweeted(projectName string) (bool, error)
 }
 
-func GetBackend(storageURL string, storageAuth string, debug *bool) Pool {
+func GetBackend(storageURL string, storageAuth string, debug bool) Pool {
 	var pool Pool
-	if *debug == false {
+	if debug == false {
 		storageBackend := RedisStorage{}
 		pool = storageBackend.NewPool(storageURL, storageAuth)
 	} else {

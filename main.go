@@ -16,6 +16,7 @@ const (
 	Version = "0.2.0"
 
 	tweetTime = 5 * time.Second
+	// TODO: Reset
 	//tweetTime                = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
 	followNewPersonTime      = 45 * time.Minute
@@ -34,13 +35,13 @@ func main() {
 		storageURL  = flags.String("storage-url", "TRENDINGGITHUB_STORAGE_URL", "", "Storage URL (e.g. 1.2.3.4:6379 or :6379). Env var: TRENDINGGITHUB_STORAGE_URL")
 		storageAuth = flags.String("storage-auth", "TRENDINGGITHUB_STORAGE_AUTH", "", "Storage Auth (e.g. myPassword or <empty>). Env var: TRENDINGGITHUB_STORAGE_AUTH")
 
-		flagVersion = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit. Env var: TRENDINGGITHUB_VERSION")
-		flagDebug   = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it (useful for development). Env var: TRENDINGGITHUB_DEBUG")
+		showVersion = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit. Env var: TRENDINGGITHUB_VERSION")
+		debugMode = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it (useful for development). Env var: TRENDINGGITHUB_DEBUG")
 	)
 	flag.Parse()
 
 	// Output the version and exit
-	if *flagVersion {
+	if *showVersion {
 		fmt.Printf("@TrendingGithub v%s\n", Version)
 		return
 	}
@@ -48,21 +49,20 @@ func main() {
 	log.Println("Hey, nice to meet you. My name is @TrendingGithub. Lets get ready to tweet some trending content!")
 	defer log.Println("Nice sesssion. A lot of knowledge was tweeted. Good work and see you next time!")
 
-	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, flagDebug)
-
-	// Refresh the configuration every day
+	// Prepare the twitter client
+	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, debugMode)
 	twitterClient.SetupConfigurationRefresh(configurationRefreshTime)
 
 	// Activate our growth hack feature
-	// From all of our followers, pick one and follow a friend of him.
-	// With this we hope the new person will get a message "TrendingGithub is following you"
-	// looks at our profile and follows us as well ;)
+	// Checkout the README for details or read the code (suggested).
 	if *twitterFollowNewPerson {
 		twitterClient.SetupFollowNewPeopleScheduling(followNewPersonTime)
 	}
 
-	storageBackend := storage.GetBackend(*storageURL, *storageAuth, flagDebug)
+	// Request a storage backend
+	storageBackend := storage.GetBackend(*storageURL, *storageAuth, *debugMode)
 	defer storageBackend.Close()
 
+	// Let the party begin
 	StartTweeting(twitterClient, storageBackend)
 }
