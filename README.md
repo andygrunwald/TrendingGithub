@@ -17,30 +17,23 @@ A twitter bot (**[@TrendingGithub](https://twitter.com/TrendingGithub)**) to twe
 
 * Tweets trending projects every 30 minutes
 * Refreshes the configuration of twitters URL shortener t.co every 24 hours
-* Greylisting of repositories for 45 days (to avoid tweeting a project multiple times in a short timeframe)
+* Greylisting of repositories for 30 days (to avoid tweeting a project multiple times in a short timeframe)
 * Maximum use of 140 chars per tweet to fill up with information
 * Debug / development mode
 * Multiple storage backends (currently [Redis](http://redis.io/) and in memory)
-
-## Motivation
-
-I love to discover new tools, new projects, new languages, new people who share the same passion like me, new coding best practices, new exciting ideas.
-And [I use twitter a lot](https://twitter.com/andygrunwald) and have little time to check [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) on a daily basis.
-
-Why not combine both to save time, favorite projects and developers and spread them by retweets?
 
 ## Installation
 
 1. Download the [latest release](https://github.com/andygrunwald/TrendingGithub/releases/latest)
 2. Extract the archive (zip / tar.gz)
-3. Start the bot: `./TrendingGithub -debug`
+3. Start the bot via `./TrendingGithub -debug`
 
 For linux this can look like:
 
 ```sh
-curl -L  https://github.com/andygrunwald/TrendingGithub/releases/download/v0.1.0/TrendingGithub-v0.1.0-linux-amd64.tar.gz -o TrendingGithub-v0.1.0-linux-amd64.tar.gz
-tar xzvf TrendingGithub-v0.1.0-linux-amd64.tar.gz
-cd TrendingGithub-v0.1.0-linux-amd64
+curl -L  https://github.com/andygrunwald/TrendingGithub/releases/download/v0.3.0/TrendingGithub-v0.3.0-linux-amd64.tar.gz -o TrendingGithub-v0.3.0-linux-amd64.tar.gz
+tar xzvf TrendingGithub-v0.3.0-linux-amd64.tar.gz
+cd TrendingGithub-v0.3.0-linux-amd64
 ./TrendingGithub -debug
 ```
 
@@ -49,57 +42,52 @@ cd TrendingGithub-v0.1.0-linux-amd64
 ```
 $ ./TrendingGithub -help
 Usage of ./TrendingGithub:
-  -config string
-    	Path to configuration file.
   -debug
-    	Outputs the tweet instead of tweet it. Useful for development.
+    	Outputs the tweet instead of tweet it (useful for development). Env var: TRENDINGGITHUB_DEBUG
+  -storage-auth string
+    	Storage Auth (e.g. myPassword or <empty>). Env var: TRENDINGGITHUB_STORAGE_AUTH
+  -storage-url string
+    	Storage URL (e.g. 1.2.3.4:6379 or :6379). Env var: TRENDINGGITHUB_STORAGE_URL
+  -twitter-access-token string
+    	Twitter-API: Access token. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN
+  -twitter-access-token-secret string
+    	Twitter-API: Access token secret. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN_SECRET
+  -twitter-consumer-key string
+    	Twitter-API: Consumer key. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_KEY
+  -twitter-consumer-secret string
+    	Twitter-API: Consumer secret. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_SECRET
+  -twitter-follow-new-person
+    	Twitter: Follows a friend of one of our followers. Env var: TRENDINGGITHUB_TWITTER_FOLLOW_NEW_PERSON
   -version
-    	Outputs the version number and exits.
+    	Outputs the version number and exit. Env var: TRENDINGGITHUB_VERSION
 ```
 
-The **-config** parameter is required.
-See [Configuration chapter](https://github.com/andygrunwald/TrendingGithub#configuration) for details.
+**Every parameter can be set by environment variable as well.**
 
-**-debug** is quite useful for development.
-It doesn`t output special information.
-It only avoids using the Twitter API for tweet purposes and outputs the tweet on stdout.
-
-## Configuration
-
-The configuration is based on a JSON file.
-You can use the [config.json.dist](./config.json.dist) file as base.
-
-### Twitter
-
-```
-"twitter": {
-    "consumer-key": "",
-    "consumer-secret": "",
-    "access-token": "",
-    "access-token-secret": ""
-  },
-```
-
-All these settings mentioned above are necessary to use the Twitter API and to set up a tweet by your application.
+**Twitter-API settings** (`twitter-access-token`, `twitter-access-token-secret`, `twitter-consumer-key` and `twitter-consumer-secret`) are necessary to use the Twitter API and to set up a tweet by your application.
 You can get those settings by [Twitter's application management](https://apps.twitter.com/).
 
-### Redis
+If you want to play around or develop this bot, use the `debug` setting.
+It avoids using the Twitter API for tweet purposes and outputs the tweet on stdout.
 
-```
-"redis": {
-    "url": ":6379",
-    "auth": ""
-  }
-```
-
-*redis* contains the connection details to the [Redis](http://redis.io/) server.
-This Redis server is used for blacklisting projects that were already tweeted.
-
-**url** is the address of the Redis server in format *ip:port*.
-Example: *192.168.0.12:6379*.
+The Redis url (`storage-url`)is the address of the Redis server in format *ip:port* (e.g. *192.168.0.12:6379*).
 If your server is running on localhost you can use *:6379* as a shortcut.
+`storage-auth` is the authentication string necessary for your Redis server if you use the [Authentication feature](http://redis.io/topics/security#authentication-feature).
 
-**auth** is the authentication string necessary for your Redis server if you use the [Authentication feature](http://redis.io/topics/security#authentication-feature).
+## Motivation
+
+I love to discover new tools, new projects, new languages, new coding best practices, new exciting ideas and new people who share the same passion like me.
+[I use twitter a lot](https://twitter.com/andygrunwald) and have little time to check [trending repositories](https://github.com/trending) and [developers](https://github.com/trending/developers) on a daily basis.
+
+Why not combine both to save time and spread favorite projects and developers via tweets?
+
+## TODO
+
+* Readme: Why is a backend needed?
+* Readme: Explain the growth hack
+* Code: Extend logging
+* Code: Add expvar support
+* Code: Documentation
 
 ## License
 
