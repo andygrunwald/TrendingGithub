@@ -81,9 +81,20 @@ I love to discover new tools, new projects, new languages, new coding best pract
 
 Why not combine both to save time and spread favorite projects and developers via tweets?
 
+## Storage backends
+
+Why is a storage backend needed at all?
+
+We are looking for popular projects in a regular interval.
+To avoid tweeting a project or developer multiple times after another we add those records to a blacklist for a specific time.
+
+At the moment there are two backends implemented:
+
+* Memory (used in development)
+* Redis (used in production)
+
 ## TODO
 
-* Readme: Why is a backend needed?
 * Readme: Explain the growth hack
 * Code: Extend logging
 * Code: Add expvar support
