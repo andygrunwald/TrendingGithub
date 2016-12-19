@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	githubwrap "github.com/andygrunwald/TrendingGithub/github"
 	"github.com/andygrunwald/TrendingGithub/storage"
 	trendingwrap "github.com/andygrunwald/TrendingGithub/trending"
 	"github.com/andygrunwald/go-trending"
@@ -95,7 +96,7 @@ func (ts *TweetSearch) SendProject(p trending.Project) {
 		// This is a really hack here ...
 		// We have to abstract this a little bit.
 		// Eieieieiei
-		repository, _ := GetRepositoryDetails(p.Owner, p.RepositoryName)
+		repository, _ := githubwrap.GetRepositoryDetails(p.Owner, p.RepositoryName)
 
 		text = ts.BuildTweet(p, repository)
 	}
