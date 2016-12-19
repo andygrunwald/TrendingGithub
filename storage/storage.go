@@ -1,8 +1,8 @@
 package storage
 
 const (
-	// GreyListTTL defined the TTL of a repository in seconds: 1 month and 15 days (~45 days)
-	GreyListTTL = 60 * 60 * 24 * 45
+	// GreyListTTL defined the TTL of a repository in seconds: 30 days (~30 days)
+	GreyListTTL = 60 * 60 * 24 * 30
 )
 
 type Storage interface {
