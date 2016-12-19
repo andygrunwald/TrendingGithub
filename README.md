@@ -92,7 +92,7 @@ We implemented a small growth hack to get a few followers.
 This hack was suggested by my colleague [@mre](https://github.com/mre).
 It works like described:
 
-* Get all followers from @TrendingGithub
+* Get all followers from [@TrendingGithub](https://twitter.com/TrendingGithub)
 * Choose a random one and get the followers of the choosen person
 * Check if this person follows us already
 * If yes, repeat
