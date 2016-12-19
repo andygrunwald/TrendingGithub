@@ -33,10 +33,10 @@ type Twitter struct {
 }
 
 // NewClient returns a new client to communicate with twitter (obvious, right?)
-func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug *bool) *Twitter {
+func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug bool) *Twitter {
 	var client *Twitter
 	// If we are running in debug mode, we won`t tweet the tweet.
-	if *debug == false {
+	if debug == false {
 
 		// Create anaconda client
 		anaconda.SetConsumerKey(consumerKey)

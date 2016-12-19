@@ -50,7 +50,7 @@ func main() {
 	defer log.Println("Nice sesssion. A lot of knowledge was tweeted. Good work and see you next time!")
 
 	// Prepare the twitter client
-	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, debugMode)
+	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
 	twitterClient.SetupConfigurationRefresh(configurationRefreshTime)
 
 	// Activate our growth hack feature
