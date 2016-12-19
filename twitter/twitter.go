@@ -1,12 +1,12 @@
 package twitter
 
 import (
+	"log"
 	"math/rand"
 	"net/url"
 	"strconv"
 	"sync"
 	"time"
-	"log"
 
 	"github.com/ChimeraCoder/anaconda"
 )

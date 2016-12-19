@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
-	"math/rand"
 
 	githubwrap "github.com/andygrunwald/TrendingGithub/github"
 	"github.com/andygrunwald/TrendingGithub/storage"
