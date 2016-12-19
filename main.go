@@ -51,6 +51,11 @@ func main() {
 
 	// Prepare the twitter client
 	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
+	err := twitterClient.LoadConfiguration()
+	if err != nil {
+		log.Fatalf("Twitter Configuration initialisation failed: %s", err)
+	}
+
 	twitterClient.SetupConfigurationRefresh(configurationRefreshTime)
 
 	// Activate our growth hack feature

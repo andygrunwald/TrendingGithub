@@ -1,7 +1,6 @@
 package twitter
 
 import (
-	"log"
 	"math/rand"
 	"net/url"
 	"strconv"
@@ -12,11 +11,12 @@ import (
 )
 
 const (
-	// Status "none" of GET friendships/lookup call
-	// @link https://dev.twitter.com/rest/reference/get/friendships/lookup
-	TwitterStatusNone = "none"
+	// twitterStatusNone reflects the status "none" of GET friendships/lookup call
+	// See https://dev.twitter.com/rest/reference/get/friendships/lookup
+	twitterStatusNone = "none"
 )
 
+// TwitterAPI is the interface to decouple the twitter API.
 type TwitterAPI interface {
 	GetConfiguration(v url.Values) (conf anaconda.Configuration, err error)
 	PostTweet(status string, v url.Values) (tweet anaconda.Tweet, err error)
@@ -25,19 +25,20 @@ type TwitterAPI interface {
 	FollowUserId(userId int64, v url.Values) (user anaconda.User, err error)
 }
 
-// Twitter is the data structure to store the twitter client
+// Twitter is the data structure to reflect the twitter client
 type Twitter struct {
 	API           TwitterAPI
 	Configuration *anaconda.Configuration
 	Mutex         *sync.Mutex
 }
 
-// NewClient returns a new client to communicate with twitter (obvious, right?)
+// NewClient returns a new client to communicate with twitter.
+// If debug is enabled, we will load a debug configuration for the twitter client.
 func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debug bool) *Twitter {
 	var client *Twitter
-	// If we are running in debug mode, we won`t tweet the tweet.
-	if debug == false {
 
+	// If we are running in debug mode, we won`t tweet the tweet.
+	if !debug {
 		// Create anaconda client
 		anaconda.SetConsumerKey(consumerKey)
 		anaconda.SetConsumerSecret(consumerSecret)
@@ -46,24 +47,26 @@ func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret strin
 			API:   api,
 			Mutex: &sync.Mutex{},
 		}
-		err := client.LoadConfiguration()
-		if err != nil {
-			log.Fatal("Twitter Configuration initialisation failed:", err)
-		}
 	} else {
 		client = &Twitter{
-			Configuration: GetDebugConfiguration(),
+			// Debug configuration
+			Configuration: &anaconda.Configuration{
+				ShortUrlLength:      24,
+				ShortUrlLengthHttps: 25,
+			},
 		}
 	}
 
 	return client
 }
 
+// LoadConfiguration loads the configuration of the twitter client from twitter.
+// See https://dev.twitter.com/rest/reference/get/help/configuration
 func (client *Twitter) LoadConfiguration() error {
 	v := url.Values{}
 	conf, err := client.API.GetConfiguration(v)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	client.Mutex.Lock()
@@ -73,6 +76,9 @@ func (client *Twitter) LoadConfiguration() error {
 	return nil
 }
 
+// SetupConfigurationRefresh sets up a scheduler and will refresh the configuration from twitter every duration d.
+// The reason for this is that these values can change over time.
+// See https://dev.twitter.com/rest/reference/get/help/configuration
 func (client *Twitter) SetupConfigurationRefresh(d time.Duration) {
 	go func() {
 		for _ = range time.Tick(d) {
@@ -81,6 +87,8 @@ func (client *Twitter) SetupConfigurationRefresh(d time.Duration) {
 	}()
 }
 
+// SetupFollowNewPeopleScheduling sets up a scheduler and will search for a new person to follow every duration d.
+// This is our growth hack feature.
 func (client *Twitter) SetupFollowNewPeopleScheduling(d time.Duration) {
 	go func() {
 		for _ = range time.Tick(d) {
@@ -92,11 +100,11 @@ func (client *Twitter) SetupFollowNewPeopleScheduling(d time.Duration) {
 // FollowNewPerson will follow a new person on twitter to raise the attraction for the bot.
 // We will follow a new person who follow on random follower of @TrendingGithub
 // Only persons who don`t have a relationship to the bot will be followed.
-func (client *Twitter) FollowNewPerson() {
+func (client *Twitter) FollowNewPerson() error{
 	// Get own followers
 	c, err := client.API.GetFollowersIds(nil)
 	if err != nil {
-		return
+		return err
 	}
 
 	// We loop here, because we want to follow one person.
@@ -112,7 +120,7 @@ func (client *Twitter) FollowNewPerson() {
 		v.Add("user_id", strconv.FormatInt(c.Ids[randomNumber], 10))
 		c, err = client.API.GetFollowersIds(v)
 		if err != nil {
-			return
+			return err
 		}
 
 		// Choose a random follower (again) from the random follower chosen before
@@ -123,7 +131,7 @@ func (client *Twitter) FollowNewPerson() {
 		v.Add("user_id", strconv.FormatInt(c.Ids[randomNumber], 10))
 		friendships, err := client.API.GetFriendshipsLookup(v)
 		if err != nil {
-			return
+			return err
 		}
 
 		// Test if @TrendingGithub has a relationship to the new user.
@@ -137,19 +145,19 @@ func (client *Twitter) FollowNewPerson() {
 		// ... if not we will follow the new person
 		// We drop the error and user here, because we got no logging yet ;)
 		client.API.FollowUserId(c.Ids[randomNumber], nil)
-		return
+		return nil
 	}
 }
 
 // isThereARelationship will test if @TrendingGithub has a relationship to the new user.
-// Only if there is no relationship ("none")
+// Only if there is no relationship ("none").
 // Default wise we assume that we got a relationship already
-// @link https://dev.twitter.com/rest/reference/get/friendships/lookup
+// See https://dev.twitter.com/rest/reference/get/friendships/lookup
 func (client *Twitter) isThereARelationship(friendships []anaconda.Friendship) bool {
 	shouldIFollow := false
 	for _, friend := range friendships {
 		for _, status := range friend.Connections {
-			if status == TwitterStatusNone {
+			if status == twitterStatusNone {
 				shouldIFollow = true
 				break
 			}
@@ -159,7 +167,7 @@ func (client *Twitter) isThereARelationship(friendships []anaconda.Friendship) b
 	return shouldIFollow
 }
 
-// Tweet will .... tweet the text :D ... Badumts
+// Tweet will ... tweet the text :D ... Badum ts
 func (client *Twitter) Tweet(text string) (*anaconda.Tweet, error) {
 	v := url.Values{}
 	tweet, err := client.API.PostTweet(text, v)
@@ -168,11 +176,4 @@ func (client *Twitter) Tweet(text string) (*anaconda.Tweet, error) {
 	}
 
 	return &tweet, nil
-}
-
-func GetDebugConfiguration() *anaconda.Configuration {
-	return &anaconda.Configuration{
-		ShortUrlLength:      24,
-		ShortUrlLengthHttps: 25,
-	}
 }
