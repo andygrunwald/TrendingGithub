@@ -13,7 +13,7 @@ import (
 
 const (
 	// Version of @TrendingGithub
-	Version = "0.3.1"
+	Version = "0.4.0"
 )
 
 func main() {
