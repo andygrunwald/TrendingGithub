@@ -51,9 +51,14 @@ func main() {
 
 	// Prepare the twitter client
 	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
-	err := twitterClient.LoadConfiguration()
-	if err != nil {
-		log.Fatalf("Twitter Configuration initialisation failed: %s", err)
+
+	// When we are running in a debug mode, we are running with a debug configuration.
+	// So we don`t need to load the configuration from twitter here.
+	if *debugMode == false {
+		err := twitterClient.LoadConfiguration()
+		if err != nil {
+			log.Fatalf("Twitter Configuration initialisation failed: %s", err)
+		}
 	}
 
 	twitterClient.SetupConfigurationRefresh(configurationRefreshTime)
