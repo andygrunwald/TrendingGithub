@@ -200,7 +200,7 @@ func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) s
 		tweetLen -= starsLen
 	}
 
-	// Lets add the URL, but we don`t need to substract the chars
+	// Lets add the URL, but we don`t need to subtract the chars
 	// because we have done this before
 	if p.URL != nil {
 		tweet += " "

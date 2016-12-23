@@ -32,7 +32,7 @@ func TestRedis_Get_SuccessConnection(t *testing.T) {
 	err := conn.Close()
 
 	if err != nil {
-		t.Fatalf("An error occured, but no one was expected: %s", err)
+		t.Fatalf("An error occurred, but no one was expected: %s", err)
 	}
 }
 
