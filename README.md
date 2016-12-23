@@ -31,9 +31,9 @@ A twitter bot (**[@TrendingGithub](https://twitter.com/TrendingGithub)**) to twe
 For linux this can look like:
 
 ```sh
-curl -L  https://github.com/andygrunwald/TrendingGithub/releases/download/v0.3.0/TrendingGithub-v0.3.0-linux-amd64.tar.gz -o TrendingGithub-v0.3.0-linux-amd64.tar.gz
-tar xzvf TrendingGithub-v0.3.0-linux-amd64.tar.gz
-cd TrendingGithub-v0.3.0-linux-amd64
+curl -L  https://github.com/andygrunwald/TrendingGithub/releases/download/v0.3.1/TrendingGithub-v0.3.1-linux-amd64.tar.gz -o TrendingGithub-v0.3.1-linux-amd64.tar.gz
+tar xzvf TrendingGithub-v0.3.1-linux-amd64.tar.gz
+cd TrendingGithub-v0.3.1-linux-amd64
 ./TrendingGithub -debug
 ```
 
