@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/andygrunwald/go-trending"
-	"github.com/google/go-github/github"
+	"github.com/andygrunwald/TrendingGithub/github"
 )
 
 func TestTweets_IsProjectEmpty(t *testing.T) {
@@ -46,15 +46,6 @@ func TestTweets_BuildTweet(t *testing.T) {
 		Project trending.Project
 		Result  string
 	}{
-		//{trending.Project{Name: ""}, "true"},
-		/*
-			{trending.Project{
-				Name:        "SuperDuperOwnerOrOrganisation/This-Is-A-Super-Long-Project-Name-That-Will-Maybe-Kill-My-Tweet-Generation-But-I-Think-It-Is-Useful-To-Test",
-				Description: projectDescription + " and more and better and super duper text",
-				Language:    "Go",
-				URL:         projectURL,
-			}, "andygrunwald/TrendingGithub - A twitter bot (@TrendingGithub) to tweet trending repositories and developers... https://github.com/andygrunwald/TrendingGithub #Go"},
-		*/
 		{trending.Project{
 			Name:           "SuperDuperOwnerOrOrganisation/This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project",
 			Owner:          "SuperDuperOwnerOrOrganisation",
