@@ -13,11 +13,9 @@ import (
 
 const (
 	// Version of @TrendingGithub
-	Version = "0.2.0"
+	Version = "0.3.1"
 
-	tweetTime = 5 * time.Second
-	// TODO: Reset
-	//tweetTime                = 30 * time.Minute
+	tweetTime                = 30 * time.Minute
 	configurationRefreshTime = 24 * time.Hour
 	followNewPersonTime      = 45 * time.Minute
 )
