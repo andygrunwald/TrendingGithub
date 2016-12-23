@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	// OK is the standard response of a Redis server if everything went fine
+	// RedisOK is the standard response of a Redis server if everything went fine ("OK")
 	RedisOK = "OK"
 )
 
