@@ -14,6 +14,8 @@ import (
 	"github.com/andygrunwald/go-trending"
 )
 
+// TweetSearch is the main structure of this Bot.
+// It contains alls logic and attribute to search, build and tweet a new project.
 type TweetSearch struct {
 	Channel   chan *Tweet
 	Trending  *trendingwrap.Trend
