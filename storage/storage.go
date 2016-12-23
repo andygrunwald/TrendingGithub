@@ -1,22 +1,30 @@
 package storage
 
+import (
+	"io"
+)
+
 const (
 	// GreyListTTL defined the TTL of a repository in seconds: 30 days (~30 days)
 	GreyListTTL = 60 * 60 * 24 * 30
 )
 
+// Storage represents a new storage type.
+// Examples as storages are Redis or in memory.
 type Storage interface {
 	NewPool(url, auth string) Pool
 }
 
+// Pool is the implementation of a specific storage type.
+// It should handle a pool of connections to communicate with the storage type.
 type Pool interface {
-	Close() error
+	io.Closer
 	Get() Connection
 }
 
+// Connection represents a single connection out of a pool from a storage type.
 type Connection interface {
-	// Close closes the connection.
-	Close() error
+	io.Closer
 
 	// MarkRepositoryAsTweeted marks a single projects as "already tweeted".
 	// This information will be stored in Redis as a simple set with a TTL.
@@ -30,7 +38,8 @@ type Connection interface {
 	IsRepositoryAlreadyTweeted(projectName string) (bool, error)
 }
 
-func GetBackend(storageURL string, storageAuth string, debug bool) Pool {
+// NewBackend returns a new connection pool based on the requested storage engine.
+func NewBackend(storageURL string, storageAuth string, debug bool) Pool {
 	var pool Pool
 	if debug == false {
 		storageBackend := RedisStorage{}

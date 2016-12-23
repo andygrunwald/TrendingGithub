@@ -27,8 +27,7 @@ type Tweet struct {
 	ProjectName string
 }
 
-// GenerateNewTweet is responsible to search a new project / repository
-// and build a new tweet based on this.
+// GenerateNewTweet is responsible to search a new project / repository and build a new tweet based on this.
 // The generated tweet will be sent to tweetChan.
 func (ts *TweetSearch) GenerateNewTweet() {
 	var projectToTweet trending.Project
@@ -62,7 +61,7 @@ func (ts *TweetSearch) GenerateNewTweet() {
 	}
 }
 
-// timeframeLoopToSearchAProject provides basicly a loop over incoming timeFrames (+ language)
+// TimeframeLoopToSearchAProject provides basically a loop over incoming timeFrames (+ language)
 // to try to find a new tweet.
 // You can say that this is nearly the <3 of this bot.
 func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, language string) trending.Project {
@@ -88,7 +87,7 @@ func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, langua
 	return projectToTweet
 }
 
-// sendProject puts the project we want to tweet into the tweet queue
+// SendProject puts the project we want to tweet into the tweet queue
 // If the queue is ready to receive a new project, this will be tweeted
 func (ts *TweetSearch) SendProject(p trending.Project) {
 	text := ""
@@ -109,7 +108,7 @@ func (ts *TweetSearch) SendProject(p trending.Project) {
 	ts.Channel <- tweet
 }
 
-// isProjectEmpty checks if the incoming project is empty
+// IsProjectEmpty checks if the incoming project is empty
 func (ts *TweetSearch) IsProjectEmpty(p trending.Project) bool {
 	if len(p.Name) > 0 {
 		return false
@@ -152,7 +151,7 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 	return projectToTweet
 }
 
-// buildTweet is responsible to build a 140 length string based on the project we found.
+// BuildTweet is responsible to build a 140 length string based on the project we found.
 func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) string {
 	tweet := ""
 	// Base length of a tweet
@@ -220,7 +219,7 @@ func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) s
 	return tweet
 }
 
-// markTweetAsAlreadyTweeted adds a projectName to the global blacklist of already tweeted projects.
+// MarkTweetAsAlreadyTweeted adds a projectName to the global blacklist of already tweeted projects.
 // For this we use a Sorted Set where the score is the timestamp of the tweet.
 func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, error) {
 	storageConn := ts.Storage.Get()
@@ -247,7 +246,7 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool) {
 	// Setup tweet scheduling
 	ts := &TweetSearch{
 		Channel:   make(chan *Tweet),
-		Trending:  trendingwrap.NewTrendingClient(),
+		Trending:  trendingwrap.NewClient(),
 		Storage:   storageBackend,
 		URLLength: twitter.Configuration.ShortUrlLengthHttps,
 	}
@@ -286,6 +285,8 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool) {
 	}
 }
 
+// SetupRegularTweetSearchProcess is the time ticker to search a new project and
+// tweet it in a specific time interval.
 func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	go func() {
 		for _ = range time.Tick(tweetTime) {

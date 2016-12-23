@@ -69,7 +69,7 @@ func main() {
 	}
 
 	// Request a storage backend
-	storageBackend := storage.GetBackend(*storageURL, *storageAuth, *debugMode)
+	storageBackend := storage.NewBackend(*storageURL, *storageAuth, *debugMode)
 	defer storageBackend.Close()
 
 	// Let the party begin

@@ -7,19 +7,20 @@ import (
 	"github.com/andygrunwald/go-trending"
 )
 
+// TrendingAPI represents the interface to the github.com/trending website
 type TrendingAPI interface {
 	GetTrendingLanguages() ([]trending.Language, error)
 	GetProjects(time, language string) ([]trending.Project, error)
 }
 
-// Trend is the datastructure to hold a github-trending client.
+// Trend is the data structure to hold a github-trending client.
 // This will be used to retrieve trending projects
 type Trend struct {
 	Client TrendingAPI
 }
 
-// NewTrendingClient will provide a new instance of Trend.
-func NewTrendingClient() *Trend {
+// NewClient will provide a new instance of Trend.
+func NewClient() *Trend {
 	githubTrending := trending.NewTrending()
 
 	t := &Trend{
@@ -34,8 +35,7 @@ func (t *Trend) GetTimeFrames() []string {
 	return []string{trending.TimeToday, trending.TimeWeek, trending.TimeMonth}
 }
 
-// GetTrendingLanguages returns all trending languages,
-// but only the URLNames, because this is what we need.
+// GetTrendingLanguages returns all trending languages, but only the URLNames, because this is what we need.
 // Errors are not important here.
 func (t *Trend) GetTrendingLanguages() []string {
 	languages, err := t.Client.GetTrendingLanguages()
@@ -45,7 +45,7 @@ func (t *Trend) GetTrendingLanguages() []string {
 
 	// I know. Slices with a predefined number of elements (0) is not a good idea.
 	// But we are calling an external API and don`t know how many items will be there.
-	// Furthere more we will filter some languages in the loop.
+	// Further more we will filter some languages in the loop.
 	// Does anyone got a better idea? Contact me!
 	var trendingLanguages []string
 	for _, language := range languages {

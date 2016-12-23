@@ -11,16 +11,20 @@ const (
 	RedisOK = "OK"
 )
 
+// RedisStorage represents the storage engine based on the Redis project / server
 type RedisStorage struct{}
 
+// RedisPool is the connection pool to a redis instance
 type RedisPool struct {
 	pool *redis.Pool
 }
 
+// RedisConnection represents a single connection to a redis instance.
 type RedisConnection struct {
 	conn redis.Conn
 }
 
+// NewPool returns a new redis connection pool
 func (rs *RedisStorage) NewPool(url, auth string) Pool {
 	rp := RedisPool{
 		pool: &redis.Pool{
@@ -53,10 +57,12 @@ func (rs *RedisStorage) NewPool(url, auth string) Pool {
 	return rp
 }
 
+// Close will close a connection pool
 func (rp RedisPool) Close() error {
 	return rp.pool.Close()
 }
 
+// Get will return a new connection out the pool
 func (rp RedisPool) Get() Connection {
 	rc := RedisConnection{
 		conn: rp.pool.Get(),
@@ -64,6 +70,7 @@ func (rp RedisPool) Get() Connection {
 	return &rc
 }
 
+// Close will close a single redis connection
 func (rc *RedisConnection) Close() error {
 	return rc.conn.Close()
 }
