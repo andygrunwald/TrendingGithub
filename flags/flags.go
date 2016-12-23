@@ -34,6 +34,21 @@ func String(name, env, fallback, help string) *string {
 	return flag.String(name, value, help)
 }
 
+// Int registers a flag and returns the pointer to the resulting int.
+// The default value is passed as fallback and env sets the env variable
+// that can override the default.
+func Int(name, env string, fallback int, help string) *int {
+	value := fallback
+	if v := os.Getenv(env); v != "" {
+		if i, err := strconv.Atoi(v); err == nil {
+			value = i
+		}
+
+	}
+
+	return flag.Int(name, value, help)
+}
+
 // Duration registers a flag and returns the pointer to the resulting duration.
 // The default value is passed as fallback and env sets the env variable
 // that can override the default.

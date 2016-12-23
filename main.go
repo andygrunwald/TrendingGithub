@@ -34,6 +34,7 @@ func main() {
 		storageURL  = flags.String("storage-url", "TRENDINGGITHUB_STORAGE_URL", ":6379", "Storage URL (e.g. 1.2.3.4:6379 or :6379). Env var: TRENDINGGITHUB_STORAGE_URL")
 		storageAuth = flags.String("storage-auth", "TRENDINGGITHUB_STORAGE_AUTH", "", "Storage Auth (e.g. myPassword or <empty>). Env var: TRENDINGGITHUB_STORAGE_AUTH")
 
+		expVarPort  = flags.Int("expvar-port", "TRENDINGGITHUB_EXPVAR_PORT", 8123, "Port which will be used for the expvar TCP server. Env var: TRENDINGGITHUB_EXPVAR_PORT")
 		showVersion = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit. Env var: TRENDINGGITHUB_VERSION")
 		debugMode   = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it (useful for development). Env var: TRENDINGGITHUB_DEBUG")
 	)
@@ -59,9 +60,8 @@ func main() {
 			log.Fatalf("Twitter Configuration initialisation failed: %s", err)
 		}
 		log.Printf("Twitter Configuration initialisation success: ShortUrlLength %d\n", twitterClient.Configuration.ShortUrlLength)
+		twitterClient.SetupConfigurationRefresh(*configurationRefreshTime)
 	}
-
-	twitterClient.SetupConfigurationRefresh(*configurationRefreshTime)
 
 	// Activate our growth hack feature
 	// Checkout the README for details or read the code (suggested).
@@ -74,6 +74,13 @@ func main() {
 	storageBackend := storage.NewBackend(*storageURL, *storageAuth, *debugMode)
 	defer storageBackend.Close()
 	log.Println("Storage backend initialisation success")
+
+	// Start the exvar server
+	err := StartExpvarServer(*expVarPort)
+	if err != nil {
+		log.Fatalf("Expvar initialisation failed: %s", err)
+	}
+	log.Println("Expvar initialisation started ...")
 
 	// Let the party begin
 	StartTweeting(twitterClient, storageBackend, *tweetTime)

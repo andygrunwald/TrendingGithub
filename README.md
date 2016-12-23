@@ -44,6 +44,8 @@ $ ./TrendingGithub -help
 Usage of ./TrendingGithub:
   -debug
     	Outputs the tweet instead of tweet it (useful for development). Env var: TRENDINGGITHUB_DEBUG
+  -expvar-port int
+    	Port which will be used for the expvar TCP server. Env var: TRENDINGGITHUB_EXPVAR_PORT (default 8123)
   -storage-auth string
     	Storage Auth (e.g. myPassword or <empty>). Env var: TRENDINGGITHUB_STORAGE_AUTH
   -storage-url string
@@ -53,7 +55,7 @@ Usage of ./TrendingGithub:
   -twitter-access-token-secret string
     	Twitter-API: Access token secret. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN_SECRET
   -twitter-conf-refresh-time duration
-    	Twitter: Time interval to refresh the configuration of twitter (e.g. char length for short url). Default: 24h. Env var: TRENDINGGITHUB_TWITTER_CONF_REFRESH_TIME (default 24h0m0s)
+    	Twitter: Time interval to refresh the configuration of twitter (e.g. char length for short url). Env var: TRENDINGGITHUB_TWITTER_CONF_REFRESH_TIME (default 24h0m0s)
   -twitter-consumer-key string
     	Twitter-API: Consumer key. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_KEY
   -twitter-consumer-secret string
