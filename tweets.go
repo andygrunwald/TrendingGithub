@@ -71,9 +71,9 @@ func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, langua
 
 	for _, timeFrame := range timeFrames {
 		if len(language) > 0 {
-			log.Printf("Getting projects for timeframe %s and language %s", timeFrame, language)
+			log.Printf("Getting trending projects for timeframe \"%s\" and language \"%s\"", timeFrame, language)
 		} else {
-			log.Printf("Getting projects for timeframe %s", timeFrame)
+			log.Printf("Getting trending projects for timeframe \"%s\"", timeFrame)
 		}
 
 		getProject := ts.Trending.GetRandomProjectGenerator(timeFrame, language)
@@ -98,7 +98,10 @@ func (ts *TweetSearch) SendProject(p trending.Project) {
 		// This is a really hack here ...
 		// We have to abstract this a little bit.
 		// Eieieieiei
-		repository, _ := github.GetRepositoryDetails(p.Owner, p.RepositoryName)
+		repository, err := github.GetRepositoryDetails(p.Owner, p.RepositoryName)
+		if err != nil {
+			log.Printf("Error by retrieving repository details: %s", err)
+		}
 
 		text = ts.BuildTweet(p, repository)
 	}
@@ -128,9 +131,6 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 	storageConn := ts.Storage.Get()
 	defer storageConn.Close()
 
-	// TODO Lets throw an error, when we dont get a project at all
-	// This happened in the past and the bot tweeted nothing.
-
 	for project, projectErr = getProject(); projectErr == nil; project, projectErr = getProject() {
 		// Check if the project was already tweeted
 		alreadyTweeted, err := storageConn.IsRepositoryAlreadyTweeted(project.Name)
@@ -148,6 +148,13 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 		// This project wasn`t tweeted yet, so we will take over this job
 		projectToTweet = project
 		break
+	}
+
+	// Lets throw an error, when we dont get a project at all
+	// This happened in the past and the bot tweeted nothing.
+	// See https://github.com/andygrunwald/TrendingGithub/issues/12
+	if projectErr != nil {
+		log.Printf("Error by searching for a new project with random project generator: %s", projectErr)
 	}
 
 	return projectToTweet
@@ -236,7 +243,7 @@ func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, erro
 
 	res, err := storageConn.MarkRepositoryAsTweeted(projectName, score)
 	if err != nil || res != true {
-		log.Printf("Error during adding project %s to tweeted list: %s (%v)", projectName, err, res)
+		log.Printf("Error during adding project %s to tweeted list: %s (%v)\n", projectName, err, res)
 	}
 
 	return res, err
@@ -256,6 +263,7 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool, tweetT
 		URLLength: twitter.Configuration.ShortUrlLengthHttps,
 	}
 	SetupRegularTweetSearchProcess(ts, tweetTime)
+	log.Println("Everything setted up. Lets wait for the first trending project...")
 
 	// Waiting for tweets ...
 	for tweet := range ts.Channel {
@@ -268,7 +276,7 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool, tweetT
 		// We do this check here and not in tweets.go, because otherwise
 		// a new tweet won`t be scheduled
 		if len(tweet.ProjectName) <= 0 {
-			log.Print("No project found. No tweet sent.")
+			log.Println("No project found. No tweet sent.")
 			continue
 		}
 
@@ -281,9 +289,9 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool, tweetT
 		} else {
 			postedTweet, err := twitter.Tweet(tweet.Tweet)
 			if err != nil {
-				log.Println(err)
+				log.Printf("Error during tweet publishing process: %s\n", err)
 			} else {
-				log.Printf("Tweet %s posted", postedTweet.IdStr)
+				log.Printf("New tweet posted! ID: %s\n", postedTweet.IdStr)
 			}
 		}
 		ts.MarkTweetAsAlreadyTweeted(tweet.ProjectName)
@@ -292,12 +300,13 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool, tweetT
 
 // SetupRegularTweetSearchProcess is the time ticker to search a new project and
 // tweet it in a specific time interval.
-func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch, tweetTime time.Duration) {
+func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch, d time.Duration) {
 	go func() {
-		for range time.Tick(tweetTime) {
+		for range time.Tick(d) {
 			go tweetSearch.GenerateNewTweet()
 		}
 	}()
+	log.Printf("Project search and tweet interval: Every %s\n", d.String())
 }
 
 // ShuffleStringSlice will randomize a string slice.

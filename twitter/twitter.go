@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ChimeraCoder/anaconda"
+	"log"
 )
 
 const (
@@ -85,6 +86,7 @@ func (client *Twitter) SetupConfigurationRefresh(d time.Duration) {
 			client.LoadConfiguration()
 		}
 	}()
+	log.Printf("Twitter Configuration refreshrate: Every %s\n", d.String())
 }
 
 // SetupFollowNewPeopleScheduling sets up a scheduler and will search for a new person to follow every duration d.
@@ -95,6 +97,7 @@ func (client *Twitter) SetupFollowNewPeopleScheduling(d time.Duration) {
 			client.FollowNewPerson()
 		}
 	}()
+	log.Printf("Growth hack interval: Every %s\n", d.String())
 }
 
 // FollowNewPerson will follow a new person on twitter to raise the attraction for the bot.

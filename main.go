@@ -58,6 +58,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("Twitter Configuration initialisation failed: %s", err)
 		}
+		log.Printf("Twitter Configuration initialisation success: ShortUrlLength %d\n", twitterClient.Configuration.ShortUrlLength)
 	}
 
 	twitterClient.SetupConfigurationRefresh(*configurationRefreshTime)
@@ -72,6 +73,8 @@ func main() {
 	// Request a storage backend
 	storageBackend := storage.NewBackend(*storageURL, *storageAuth, *debugMode)
 	defer storageBackend.Close()
+	log.Println("Storage backend initialisation success")
+
 
 	// Let the party begin
 	StartTweeting(twitterClient, storageBackend, *tweetTime)
