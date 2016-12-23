@@ -107,12 +107,6 @@ I love to discover new tools, new projects, new languages, new coding best pract
 
 Why not combine both to save time and spread favorite projects and developers via tweets?
 
-## TODO
-
-* Code: Extend logging
-* Code: Add expvar support
-* Code: Documentation
-
 ## License
 
 This project is released under the terms of the [MIT license](http://en.wikipedia.org/wiki/MIT_License).
