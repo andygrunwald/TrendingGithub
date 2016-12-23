@@ -8,7 +8,7 @@ import (
 // This struct is a stripped down version of github.Repository.
 // We only return the values we need here.
 type Repository struct {
-	StargazersCount  *int             `json:"stargazers_count,omitempty"`
+	StargazersCount *int `json:"stargazers_count,omitempty"`
 }
 
 // GetRepositoryDetails will retrieve details about the repository owner/repo from github.

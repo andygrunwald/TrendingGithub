@@ -100,7 +100,7 @@ func (client *Twitter) SetupFollowNewPeopleScheduling(d time.Duration) {
 // FollowNewPerson will follow a new person on twitter to raise the attraction for the bot.
 // We will follow a new person who follow on random follower of @TrendingGithub
 // Only persons who don`t have a relationship to the bot will be followed.
-func (client *Twitter) FollowNewPerson() error{
+func (client *Twitter) FollowNewPerson() error {
 	// Get own followers
 	c, err := client.API.GetFollowersIds(nil)
 	if err != nil {

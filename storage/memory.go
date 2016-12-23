@@ -37,7 +37,7 @@ func (mc *MemoryConnection) Close() error {
 }
 
 func (mc *MemoryConnection) MarkRepositoryAsTweeted(projectName, score string) (bool, error) {
-	// Add greylisting to current time
+	// Add grey listing to current time
 	now := time.Now()
 	future := now.Add(time.Second * GreyListTTL)
 

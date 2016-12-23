@@ -36,7 +36,7 @@ func main() {
 		storageAuth = flags.String("storage-auth", "TRENDINGGITHUB_STORAGE_AUTH", "", "Storage Auth (e.g. myPassword or <empty>). Default: empty.  Env var: TRENDINGGITHUB_STORAGE_AUTH")
 
 		showVersion = flags.Bool("version", "TRENDINGGITHUB_VERSION", false, "Outputs the version number and exit. Default: false. Env var: TRENDINGGITHUB_VERSION")
-		debugMode = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it (useful for development). Default: false. Env var: TRENDINGGITHUB_DEBUG")
+		debugMode   = flags.Bool("debug", "TRENDINGGITHUB_DEBUG", false, "Outputs the tweet instead of tweet it (useful for development). Default: false. Env var: TRENDINGGITHUB_DEBUG")
 	)
 	flag.Parse()
 
