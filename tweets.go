@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	github"github.com/andygrunwald/TrendingGithub/github"
+	"github.com/andygrunwald/TrendingGithub/github"
 	"github.com/andygrunwald/TrendingGithub/storage"
 	trendingwrap "github.com/andygrunwald/TrendingGithub/trending"
 	"github.com/andygrunwald/go-trending"
