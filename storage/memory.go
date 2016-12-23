@@ -4,6 +4,9 @@ import (
 	"time"
 )
 
+// MemoryStorageContainer is the backend of the "in memory" storage engine.
+// It supports a key (string) and a duration as time.
+// The time duration can act as a TTL.
 type MemoryStorageContainer map[string]time.Time
 
 // MemoryStorage represents the in memory storage engine.
@@ -12,18 +15,18 @@ type MemoryStorage struct{}
 
 // MemoryPool is the pool of connections to your local memory ;)
 type MemoryPool struct {
-	storage map[string]time.Time
+	storage MemoryStorageContainer
 }
 
 // MemoryConnection represents a in memory connection
 type MemoryConnection struct {
-	storage map[string]time.Time
+	storage MemoryStorageContainer
 }
 
-// NewPool returns a pool to communicate with your inmemory
+// NewPool returns a pool to communicate with your in memory
 func (ms *MemoryStorage) NewPool(url, auth string) Pool {
 	return MemoryPool{
-		storage: make(map[string]time.Time),
+		storage: make(MemoryStorageContainer),
 	}
 }
 
