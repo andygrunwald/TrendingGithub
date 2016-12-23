@@ -43,23 +43,23 @@ cd TrendingGithub-v0.3.0-linux-amd64
 $ ./TrendingGithub -help
 Usage of ./TrendingGithub:
   -debug
-    	Outputs the tweet instead of tweet it (useful for development). Env var: TRENDINGGITHUB_DEBUG
+    	Outputs the tweet instead of tweet it (useful for development). Default: false. Env var: TRENDINGGITHUB_DEBUG
   -storage-auth string
-    	Storage Auth (e.g. myPassword or <empty>). Env var: TRENDINGGITHUB_STORAGE_AUTH
+    	Storage Auth (e.g. myPassword or <empty>). Default: empty.  Env var: TRENDINGGITHUB_STORAGE_AUTH
   -storage-url string
-    	Storage URL (e.g. 1.2.3.4:6379 or :6379). Env var: TRENDINGGITHUB_STORAGE_URL
+    	Storage URL (e.g. 1.2.3.4:6379 or :6379). Default: :6379.  Env var: TRENDINGGITHUB_STORAGE_URL (default ":6379")
   -twitter-access-token string
-    	Twitter-API: Access token. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN
+    	Twitter-API: Access token. Default: empty. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN
   -twitter-access-token-secret string
-    	Twitter-API: Access token secret. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN_SECRET
+    	Twitter-API: Access token secret. Default: empty. Env var: TRENDINGGITHUB_TWITTER_ACCESS_TOKEN_SECRET
   -twitter-consumer-key string
-    	Twitter-API: Consumer key. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_KEY
+    	Twitter-API: Consumer key. Default: empty. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_KEY
   -twitter-consumer-secret string
-    	Twitter-API: Consumer secret. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_SECRET
+    	Twitter-API: Consumer secret. Default: empty. Env var: TRENDINGGITHUB_TWITTER_CONSUMER_SECRET
   -twitter-follow-new-person
-    	Twitter: Follows a friend of one of our followers. Env var: TRENDINGGITHUB_TWITTER_FOLLOW_NEW_PERSON
+    	Twitter: Follows a friend of one of our followers. Default: false. Env var: TRENDINGGITHUB_TWITTER_FOLLOW_NEW_PERSON
   -version
-    	Outputs the version number and exit. Env var: TRENDINGGITHUB_VERSION
+    	Outputs the version number and exit. Default: false. Env var: TRENDINGGITHUB_VERSION
 ```
 
 **Every parameter can be set by environment variable as well.**
