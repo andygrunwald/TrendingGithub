@@ -7,7 +7,7 @@ import (
 	"github.com/andygrunwald/go-trending"
 )
 
-type TrendingClient interface {
+type TrendingAPI interface {
 	GetTrendingLanguages() ([]trending.Language, error)
 	GetProjects(time, language string) ([]trending.Project, error)
 }
@@ -15,7 +15,7 @@ type TrendingClient interface {
 // Trend is the datastructure to hold a github-trending client.
 // This will be used to retrieve trending projects
 type Trend struct {
-	Client TrendingClient
+	Client TrendingAPI
 }
 
 // NewTrendingClient will provide a new instance of Trend.
