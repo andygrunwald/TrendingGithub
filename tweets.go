@@ -213,7 +213,10 @@ func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) s
 	hashTagLen := (len(language) + 2)
 	if len(language) > 0 && tweetLen >= hashTagLen {
 		tweet += " #" + language
-		tweetLen -= hashTagLen
+
+		// When we want to do something more with the tweet we have to calculate the tweetLen further.
+		// So if you want to add more features to the tweet, put this line below into production.
+		// tweetLen -= hashTagLen
 	}
 
 	return tweet
