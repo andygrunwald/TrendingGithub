@@ -81,7 +81,7 @@ func (client *Twitter) LoadConfiguration() error {
 // See https://dev.twitter.com/rest/reference/get/help/configuration
 func (client *Twitter) SetupConfigurationRefresh(d time.Duration) {
 	go func() {
-		for _ = range time.Tick(d) {
+		for range time.Tick(d) {
 			client.LoadConfiguration()
 		}
 	}()
@@ -91,7 +91,7 @@ func (client *Twitter) SetupConfigurationRefresh(d time.Duration) {
 // This is our growth hack feature.
 func (client *Twitter) SetupFollowNewPeopleScheduling(d time.Duration) {
 	go func() {
-		for _ = range time.Tick(d) {
+		for range time.Tick(d) {
 			client.FollowNewPerson()
 		}
 	}()

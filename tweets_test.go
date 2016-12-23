@@ -4,8 +4,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/andygrunwald/go-trending"
 	"github.com/andygrunwald/TrendingGithub/github"
+	"github.com/andygrunwald/go-trending"
 )
 
 func TestTweets_IsProjectEmpty(t *testing.T) {

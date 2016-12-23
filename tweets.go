@@ -294,7 +294,7 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool) {
 // tweet it in a specific time interval.
 func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch) {
 	go func() {
-		for _ = range time.Tick(tweetTime) {
+		for range time.Tick(tweetTime) {
 			go tweetSearch.GenerateNewTweet()
 		}
 	}()
