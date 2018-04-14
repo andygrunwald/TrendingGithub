@@ -257,7 +257,7 @@ func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, erro
 // It schedules the times when we are looking for a new project to tweet.
 // If we found a project, we will build the tweet and tweet it to our followers.
 // Because we love our followers ;)
-func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool, tweetTime time.Duration) {
+func StartTweeting(twitter *twitter.Client, storageBackend storage.Pool, tweetTime time.Duration) {
 
 	// Setup tweet scheduling
 	ts := &TweetSearch{

@@ -55,7 +55,7 @@ func main() {
 	log.Printf("Hey, my name is %s (v%s). Lets get ready to tweet some trending content!\n", Name, Version)
 	defer log.Println("Nice session. A lot of knowledge was spreaded. Good work. See you next time!")
 
-	twitterClient := initTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
+	twitterClient := initTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode, *configurationRefreshTime)
 
 	// Activate the growth hack feature
 	if *twitterFollowNewPerson {
@@ -63,7 +63,7 @@ func main() {
 		twitterClient.SetupFollowNewPeopleScheduling(*followNewPersonTime)
 	}
 
-	initStorageBackend(*storageURL, *storageAuth, *debugMode)
+	storageBackend := initStorageBackend(*storageURL, *storageAuth, *debugMode)
 	initExpvarServer(*expVarPort)
 
 	// Let the party begin
@@ -71,7 +71,7 @@ func main() {
 }
 
 // initTwitterClient prepares and initializes the twitter client
-func initTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debugMode bool) *twitter.Client {
+func initTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debugMode bool, confRefreshTime time.Duration) *twitter.Client {
 	var twitterClient *twitter.Client
 
 	if debugMode {
@@ -83,10 +83,10 @@ func initTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecr
 		twitterClient = twitter.NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
 		err := twitterClient.LoadConfiguration()
 		if err != nil {
-			log.Fatalf("Twitter Configuration initialisation: ❌  (%s)", err)
+			log.Fatalf("Twitter Configuration: Initialisation ❌  (%s)", err)
 		}
-		log.Println("Twitter Configuration initialisation: ✅\n")
-		twitterClient.SetupConfigurationRefresh(*configurationRefreshTime)
+		log.Println("Twitter Configuration: Initialisation ✅")
+		twitterClient.SetupConfigurationRefresh(confRefreshTime)
 	}
 
 	return twitterClient
@@ -94,7 +94,7 @@ func initTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecr
 
 // initExpvarServer will start a small tcp server for the expvar package.
 // This server is only available via localhost on localhost:port/debug/vars
-func initExpvarServer(port int) error {
+func initExpvarServer(port int) {
 	sock, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		log.Fatalf("Expvar: Initialisation ❌  (%s)", err)
@@ -109,8 +109,10 @@ func initExpvarServer(port int) error {
 }
 
 // initStorageBackend will start the storage backend
-func initStorageBackend(address, auth string, debug bool) {
+func initStorageBackend(address, auth string, debug bool) storage.Pool {
 	storageBackend := storage.NewBackend(address, auth, debug)
 	defer storageBackend.Close()
 	log.Println("Storage backend: Initialisation ✅")
+
+	return storageBackend
 }
