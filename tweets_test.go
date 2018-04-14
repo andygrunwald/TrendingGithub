@@ -53,7 +53,7 @@ func TestTweets_BuildTweet(t *testing.T) {
 			Description:    projectDescription + " and more and better and super duper text",
 			Language:       "Go",
 			URL:            projectURL,
-		}, "SuperDuperOwnerOrOrganisation/This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
+		}, "SuperDuperOwnerOrOrganisation/This-Is-A-Long-Project-Name-That-Will-Drop-The-Description-Of-The-Project: A twitter bot (@TrendingGithub) to tweet trending repositories and developers from GitHub and more and better and super duper text ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
 		{trending.Project{
 			Name:           projectName + "-cool-super-project",
 			Owner:          owner,
@@ -61,7 +61,7 @@ func TestTweets_BuildTweet(t *testing.T) {
 			Description:    projectDescription + " and more and better and super duper text",
 			Language:       "Go",
 			URL:            projectURL,
-		}, "andygrunwald/TrendingGithub-cool-super-project: A twitter bot (@TrendingGithub) to tweet trending... ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
+		}, "andygrunwald/TrendingGithub-cool-super-project: A twitter bot (@TrendingGithub) to tweet trending repositories and developers from GitHub and more and better and super duper text ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
 		{trending.Project{
 			Name:           projectName,
 			Owner:          owner,
@@ -69,7 +69,7 @@ func TestTweets_BuildTweet(t *testing.T) {
 			Description:    projectDescription,
 			Language:       "Go",
 			URL:            projectURL,
-		}, "andygrunwald/TrendingGithub: A twitter bot (@TrendingGithub) to tweet trending repositories and developers... ★123 https://github.com/andygrunwald/TrendingGithub"},
+		}, "andygrunwald/TrendingGithub: A twitter bot (@TrendingGithub) to tweet trending repositories and developers from GitHub ★123 https://github.com/andygrunwald/TrendingGithub #Go"},
 		{trending.Project{
 			Name:           projectName,
 			Owner:          owner,
