@@ -1,6 +1,8 @@
 package github
 
 import (
+	"context"
+
 	"github.com/google/go-github/github"
 )
 
@@ -14,7 +16,7 @@ type Repository struct {
 // GetRepositoryDetails will retrieve details about the repository owner/repo from github.
 func GetRepositoryDetails(owner, repo string) (*Repository, error) {
 	client := github.NewClient(nil)
-	repository, _, err := client.Repositories.Get(owner, repo)
+	repository, _, err := client.Repositories.Get(context.Background(), owner, repo)
 	if repository == nil {
 		return nil, err
 	}
