@@ -14,6 +14,10 @@ import (
 	"github.com/andygrunwald/go-trending"
 )
 
+// TweetLength represents the maximum number
+// of characters per tweet
+const TweetLength = 280
+
 // TweetSearch is the main structure of this Bot.
 // It contains alls logic and attribute to search, build and tweet a new project.
 type TweetSearch struct {
@@ -160,11 +164,11 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 	return projectToTweet
 }
 
-// BuildTweet is responsible to build a 140 length string based on the project we found.
+// BuildTweet is responsible to build a TweetLength length string based on the project we found.
 func (ts *TweetSearch) BuildTweet(p trending.Project, repo *github.Repository) string {
 	tweet := ""
 	// Base length of a tweet
-	tweetLen := 140
+	tweetLen := TweetLength
 
 	// Number of letters for the url (+ 1 character for a whitespace)
 	// As URL shortener t.co from twitter is used
