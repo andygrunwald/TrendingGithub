@@ -295,7 +295,7 @@ func StartTweeting(twitter *twitter.Twitter, storageBackend storage.Pool, tweetT
 			if err != nil {
 				log.Printf("Error during tweet publishing process: %s\n", err)
 			} else {
-				log.Printf("New tweet posted! ID: %s\n", postedTweet.IdStr)
+				log.Printf("New tweet posted! https://twitter.com/TrendingGithub/status/%s\n", postedTweet.IdStr)
 			}
 		}
 		ts.MarkTweetAsAlreadyTweeted(tweet.ProjectName)
