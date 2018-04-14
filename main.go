@@ -76,14 +76,14 @@ func main() {
 	// Request a storage backend
 	storageBackend := storage.NewBackend(*storageURL, *storageAuth, *debugMode)
 	defer storageBackend.Close()
-	log.Println("Storage backend initialisation success")
+	log.Println("Storage backend initialisation: ✅")
 
 	// Start the exvar server
 	err := StartExpvarServer(*expVarPort)
 	if err != nil {
-		log.Fatalf("Expvar initialisation failed: %s", err)
+		log.Fatalf("Expvar initialisation: ❌  (%s)", err)
 	}
-	log.Println("Expvar initialisation started ...")
+	log.Println("Expvar initialisation ✅")
 
 	// Let the party begin
 	StartTweeting(twitterClient, storageBackend, *tweetTime)
