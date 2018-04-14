@@ -1,9 +1,12 @@
 package main
 
 import (
+	_ "expvar"
 	"flag"
 	"fmt"
 	"log"
+	"net"
+	"net/http"
 	"time"
 
 	"github.com/andygrunwald/TrendingGithub/flags"
@@ -52,39 +55,62 @@ func main() {
 	log.Printf("Hey, my name is %s (v%s). Lets get ready to tweet some trending content!\n", Name, Version)
 	defer log.Println("Nice session. A lot of knowledge was spreaded. Good work. See you next time!")
 
-	// Prepare the twitter client
-	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
+	twitterClient := initTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
 
-	// When we are running in a debug mode, we are running with a debug configuration.
-	// So we don`t need to load the configuration from twitter here.
-	if *debugMode == false {
-		err := twitterClient.LoadConfiguration()
-		if err != nil {
-			log.Fatalf("Twitter Configuration initialisation failed: %s", err)
-		}
-		log.Printf("Twitter Configuration initialisation success: ShortUrlLength %d\n", twitterClient.Configuration.ShortUrlLength)
-		twitterClient.SetupConfigurationRefresh(*configurationRefreshTime)
-	}
-
-	// Activate our growth hack feature
-	// Checkout the README for details or read the code (suggested).
+	// Activate the growth hack feature
 	if *twitterFollowNewPerson {
-		log.Println("Growth hack \"Follow a friend of a friend\" activated")
+		log.Println("Growth hack \"Follow a friend of a friend\": Enabled ✅ ")
 		twitterClient.SetupFollowNewPeopleScheduling(*followNewPersonTime)
 	}
 
-	// Request a storage backend
-	storageBackend := storage.NewBackend(*storageURL, *storageAuth, *debugMode)
-	defer storageBackend.Close()
-	log.Println("Storage backend initialisation: ✅")
-
-	// Start the exvar server
-	err := StartExpvarServer(*expVarPort)
-	if err != nil {
-		log.Fatalf("Expvar initialisation: ❌  (%s)", err)
-	}
-	log.Println("Expvar initialisation ✅")
+	initStorageBackend(*storageURL, *storageAuth, *debugMode)
+	initExpvarServer(*expVarPort)
 
 	// Let the party begin
 	StartTweeting(twitterClient, storageBackend, *tweetTime)
+}
+
+// initTwitterClient prepares and initializes the twitter client
+func initTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecret string, debugMode bool) *twitter.Client {
+	var twitterClient *twitter.Client
+
+	if debugMode {
+		// When we are running in a debug mode, we are running with a debug configuration.
+		// So we don`t need to load the configuration from twitter here.
+		twitterClient = twitter.NewDebugClient()
+
+	} else {
+		twitterClient = twitter.NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
+		err := twitterClient.LoadConfiguration()
+		if err != nil {
+			log.Fatalf("Twitter Configuration initialisation: ❌  (%s)", err)
+		}
+		log.Println("Twitter Configuration initialisation: ✅\n")
+		twitterClient.SetupConfigurationRefresh(*configurationRefreshTime)
+	}
+
+	return twitterClient
+}
+
+// initExpvarServer will start a small tcp server for the expvar package.
+// This server is only available via localhost on localhost:port/debug/vars
+func initExpvarServer(port int) error {
+	sock, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		log.Fatalf("Expvar: Initialisation ❌  (%s)", err)
+	}
+
+	go func() {
+		log.Printf("Expvar: Available at http://localhost:%d/debug/vars", port)
+		http.Serve(sock, nil)
+	}()
+
+	log.Println("Expvar: Initialisation ✅")
+}
+
+// initStorageBackend will start the storage backend
+func initStorageBackend(address, auth string, debug bool) {
+	storageBackend := storage.NewBackend(address, auth, debug)
+	defer storageBackend.Close()
+	log.Println("Storage backend: Initialisation ✅")
 }
