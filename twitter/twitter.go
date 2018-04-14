@@ -7,8 +7,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/ChimeraCoder/anaconda"
 	"log"
+
+	"github.com/ChimeraCoder/anaconda"
 )
 
 const (
@@ -39,16 +40,7 @@ func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret strin
 	var client *Twitter
 
 	// If we are running in debug mode, we won`t tweet the tweet.
-	if !debug {
-		// Create anaconda client
-		anaconda.SetConsumerKey(consumerKey)
-		anaconda.SetConsumerSecret(consumerSecret)
-		api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
-		client = &Twitter{
-			API:   api,
-			Mutex: &sync.Mutex{},
-		}
-	} else {
+	if debug {
 		client = &Twitter{
 			// Debug configuration
 			Configuration: &anaconda.Configuration{
@@ -56,6 +48,16 @@ func NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret strin
 				ShortUrlLengthHttps: 25,
 			},
 		}
+		return client
+	}
+
+	// Create anaconda client
+	anaconda.SetConsumerKey(consumerKey)
+	anaconda.SetConsumerSecret(consumerSecret)
+	api := anaconda.NewTwitterApi(accessToken, accessTokenSecret)
+	client = &Twitter{
+		API:   api,
+		Mutex: &sync.Mutex{},
 	}
 
 	return client
