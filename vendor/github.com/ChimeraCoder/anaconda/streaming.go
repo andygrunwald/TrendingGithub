@@ -31,6 +31,19 @@ type statusDeletionNotice struct {
 	} `json:"delete"`
 }
 
+type DirectMessageDeletionNotice struct {
+	Id        int64  `json:"id"`
+	IdStr     string `json:"id_str"`
+	UserId    int64  `json:"user_id"`
+	UserIdStr string `json:"user_id_str"`
+}
+
+type directMessageDeletionNotice struct {
+	Delete *struct {
+		DirectMessage *DirectMessageDeletionNotice `json:"direct_message"`
+	} `json:"delete"`
+}
+
 type LocationDeletionNotice struct {
 	UserId          int64  `json:"user_id"`
 	UserIdStr       string `json:"user_id_str"`
@@ -109,6 +122,10 @@ type EventTweet struct {
 	TargetObject *Tweet `json:"target_object"`
 }
 
+type EventFollow struct {
+	Event
+}
+
 type TooManyFollow struct {
 	Warning *struct {
 		Code    string `json:"code"`
@@ -151,7 +168,7 @@ func (s *Stream) listen(response http.Response) {
 		defer response.Body.Close()
 	}
 
-	s.api.Log.Notice("Listenning to twitter socket")
+	s.api.Log.Notice("Listening to twitter socket")
 	defer s.api.Log.Notice("twitter socket closed, leaving loop")
 
 	scanner := bufio.NewScanner(response.Body)
@@ -163,7 +180,6 @@ func (s *Stream) listen(response http.Response) {
 		} else {
 			s.C <- jsonToKnownType(j)
 		}
-
 	}
 }
 
@@ -171,8 +187,10 @@ func jsonToKnownType(j []byte) interface{} {
 	// TODO: DRY
 	if o := new(Tweet); jsonAsStruct(j, "/source", &o) {
 		return *o
-	} else if o := new(statusDeletionNotice); jsonAsStruct(j, "/delete", &o) {
+	} else if o := new(statusDeletionNotice); jsonAsStruct(j, "/delete/status", &o) {
 		return *o.Delete.Status
+	} else if o := new(directMessageDeletionNotice); jsonAsStruct(j, "/delete/direct_message", &o) {
+		return *o.Delete.DirectMessage
 	} else if o := new(locationDeletionNotice); jsonAsStruct(j, "/scrub_geo", &o) {
 		return *o.ScrubGeo
 	} else if o := new(limitNotice); jsonAsStruct(j, "/limit", &o) {
@@ -195,6 +213,8 @@ func jsonToKnownType(j []byte) interface{} {
 		return *o
 	} else if o := new(Event); jsonAsStruct(j, "/target_object", &o) {
 		return *o
+	} else if o := new(EventFollow); jsonAsStruct(j, "/event", &o) {
+		return *o
 	} else {
 		return nil
 	}
@@ -203,9 +223,9 @@ func jsonToKnownType(j []byte) interface{} {
 func (s *Stream) requestStream(urlStr string, v url.Values, method int) (resp *http.Response, err error) {
 	switch method {
 	case _GET:
-		return oauthClient.Get(s.api.HttpClient, s.api.Credentials, urlStr, v)
+		return s.api.oauthClient.Get(s.api.HttpClient, s.api.Credentials, urlStr, v)
 	case _POST:
-		return oauthClient.Post(s.api.HttpClient, s.api.Credentials, urlStr, v)
+		return s.api.oauthClient.Post(s.api.HttpClient, s.api.Credentials, urlStr, v)
 	default:
 	}
 	return nil, fmt.Errorf("HTTP method not yet supported")
@@ -261,6 +281,7 @@ func (a TwitterApi) newStream(urlStr string, v url.Values, method int) *Stream {
 		api: a,
 		C:   make(chan interface{}),
 	}
+
 	stream.start(urlStr, v, method)
 	return &stream
 }

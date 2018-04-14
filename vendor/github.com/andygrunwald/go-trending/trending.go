@@ -1,12 +1,134 @@
 package trending
 
 import (
-	"github.com/PuerkitoBio/goquery"
+	"net/http"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/PuerkitoBio/goquery"
 )
+
+// These are predefined constants to define the timerange of the requested repository or developer.
+// If trending repositories or developer are requested, a timeframe has to be added.
+// It is suggested to use this constants for this.
+const (
+	// TimeToday is limit of the current day.
+	TimeToday = "daily"
+	// TimeWeek will focus on the complete week
+	TimeWeek = "weekly"
+	// TimeMonth include the complete month
+	TimeMonth = "monthly"
+
+	// Base URL for the github website
+	defaultBaseURL = "https://github.com"
+	// Relative URL for trending repositories
+	urlTrendingPath = "/trending"
+	// Relative URL for trending developers
+	urlDevelopersPath = "/developers"
+
+	// Standard mode: github.com/trending
+	modeRepositories = "repositories"
+	// Developers mode: github.com/trending/developers
+	modeDevelopers = "developers"
+	// Language mode: Only query parameters will be added
+	modeLanguages = "languages"
+)
+
+// Trending reflects the main datastructure of this package.
+// It doesn`t provide an exported state, but based on this the methods are called.
+// To receive a new instance just add
+//
+//		package main
+//
+//		import (
+//			"github.com/andygrunwald/go-trending"
+//		)
+//
+//		func main() {
+//			trend := trending.NewTrending()
+//			...
+//		}
+//
+type Trending struct {
+	// Base URL for requests.
+	// Defaults to the public GitHub website, but can be set to a domain endpoint to use with GitHub Enterprise.
+	// BaseURL should always be specified with a trailing slash.
+	BaseURL *url.URL
+
+	// Client to use for requests
+	Client *http.Client
+}
+
+// Project reflects a single trending repository.
+// It provides information as printed on the source website https://github.com/trending.
+type Project struct {
+	// Name is the name of the repository including user / organisation like "andygrunwald/go-trending" or "airbnb/javascript".
+	Name string
+
+	// Owner is the name of the user or organisation. "andygrunwald" in "andygrunwald/go-trending" or "airbnb" in "airbnb/javascript".
+	Owner string
+
+	// RepositoryName is the name of therepository. "go-trending" in "andygrunwald/go-trending" or "javascript" in "airbnb/javascript".
+	RepositoryName string
+
+	// Description is the description of the repository like "JavaScript Style Guide" (for "airbnb/javascript").
+	Description string
+
+	// Language is the determined programing language of the project (by Github).
+	// Sometimes Language is an empty string, because Github can`t determine the (main) programing language (like for "google/deepdream").
+	Language string
+
+	// Stars is the number of github stars this project received in the given timeframe (see TimeToday / TimeWeek / TimeMonth constants).
+	// This number don`t reflect the overall stars of the project.
+	Stars int
+
+	// URL is the http(s) address of the project reflected as url.URL datastructure like "https://github.com/Workiva/go-datastructures".
+	URL *url.URL
+
+	// ContributorURL is the http(s) address of the contributors page of the project reflected as url.URL datastructure like "https://github.com/Workiva/go-datastructures/graphs/contributors".
+	ContributorURL *url.URL
+
+	// Contributor are a collection of Developer.
+	// Be aware that this collection don`t covers all contributor.
+	// Only those who are mentioned at githubs trending page.
+	Contributor []Developer
+}
+
+// Language reflects a single (programing) language offered by github for filtering.
+// If you call "GetProjects" you are able to filter by programing language.
+// For filter input you should use the URLName of Language.
+type Language struct {
+	// Name is the human readable name of the language like "Go" or "Web Ontology Language"
+	Name string
+
+	// URLName is the machine readable / usable name of the language used for filtering / url parameters like "go" or "web-ontology-language".
+	// Please use URLName if you want to filter your requests.
+	URLName string
+
+	// URL is the filter URL for the language like "https://github.com/trending?l=go" for "go" or "https://github.com/trending?l=unknown" or "unknown".
+	URL *url.URL
+}
+
+// Developer reflects a single trending developer / organisation.
+// It provides information as printed on the source website https://github.com/trending/developers.
+type Developer struct {
+	// ID is the github`s unique identifier of the user / organisation like 1342004 (google) or 698437 (airbnb).
+	ID int
+
+	// // DisplayName is the username of the developer / organisation like "torvalds" or "apache".
+	DisplayName string
+
+	// FullName is the real name of the developer / organisation like "Linus Torvalds" (for "torvalds") or "The Apache Software Foundation" (for "apache").
+	FullName string
+
+	// URL is the http(s) address of the developer / organisation reflected as url.URL datastructure like https://github.com/torvalds.
+	URL *url.URL
+
+	// Avatar is the http(s) address of the developer / organisation avatar as url.URL datastructure like https://avatars1.githubusercontent.com/u/1024025?v=3&s=192.
+	Avatar *url.URL
+}
 
 // NewTrending is the main entry point of the trending package.
 // It provides access to the API of this package by returning a Trending datastructure.
@@ -17,9 +139,17 @@ import (
 //		...
 //
 func NewTrending() *Trending {
+	return NewTrendingWithClient(http.DefaultClient)
+}
+
+// NewTrendingWithClient allows providing a custom http.Client to use for fetching trending items.
+// It allows setting timeouts or using 3rd party http.Client implementations, such as Google App Engine
+// urlfetch.Client.
+func NewTrendingWithClient(client *http.Client) *Trending {
 	baseURL, _ := url.Parse(defaultBaseURL)
 	t := Trending{
 		BaseURL: baseURL,
+		Client:  client,
 	}
 	return &t
 }
@@ -43,7 +173,12 @@ func (t *Trending) GetProjects(time, language string) ([]Project, error) {
 	}
 
 	// Receive document
-	doc, err := goquery.NewDocument(u.String())
+	res, err := t.Client.Get(u.String())
+	if err != nil {
+		return projects, err
+	}
+
+	doc, err := goquery.NewDocumentFromResponse(res)
 	if err != nil {
 		return projects, err
 	}
@@ -102,8 +237,8 @@ func (t *Trending) GetProjects(time, language string) ([]Project, error) {
 			Language:       language,
 			Stars:          stars,
 			URL:            projectURL,
-			ContributerURL: contributorURL,
-			Contributer:    developer,
+			ContributorURL: contributorURL,
+			Contributor:    developer,
 		}
 		projects = append(projects, p)
 	})
@@ -114,14 +249,14 @@ func (t *Trending) GetProjects(time, language string) ([]Project, error) {
 // GetLanguages will return a slice of Language known by gitub.
 // With the Language.URLName you can filter your GetProjects / GetDevelopers calls.
 func (t *Trending) GetLanguages() ([]Language, error) {
-	return t.generateLanguages("div.one-fourth div.select-menu a")
+	return t.generateLanguages(".col-md-3 div.select-menu .select-menu-list a")
 }
 
 // GetTrendingLanguages will return a slice of Language that are currently trending.
 // Trending languages are displayed at https://github.com/trending on the right side.
 // With the Language.URLName you can filter your GetProjects / GetDevelopers calls.
 func (t *Trending) GetTrendingLanguages() ([]Language, error) {
-	return t.generateLanguages("ul.language-filter-list a")
+	return t.generateLanguages("ul.filter-list a")
 }
 
 // generateLanguages will retrieve the languages out of the github document.
@@ -137,7 +272,12 @@ func (t *Trending) generateLanguages(mainSelector string) ([]Language, error) {
 	}
 
 	// Get document
-	doc, err := goquery.NewDocument(u.String())
+	res, err := t.Client.Get(u.String())
+	if err != nil {
+		return languages, err
+	}
+
+	doc, err := goquery.NewDocumentFromResponse(res)
 	if err != nil {
 		return languages, err
 	}
@@ -184,25 +324,30 @@ func (t *Trending) GetDevelopers(time, language string) ([]Developer, error) {
 	}
 
 	// Get document
-	doc, err := goquery.NewDocument(u.String())
+	res, err := t.Client.Get(u.String())
+	if err != nil {
+		return developers, err
+	}
+
+	doc, err := goquery.NewDocumentFromResponse(res)
 	if err != nil {
 		return developers, err
 	}
 
 	// Query information
-	doc.Find(".user-leaderboard-list-item").Each(func(i int, s *goquery.Selection) {
-		name := s.Find(".user-leaderboard-list-name a").Text()
+	doc.Find(".explore-content li").Each(func(i int, s *goquery.Selection) {
+		name := s.Find("h2 a").Text()
 		name = strings.TrimSpace(name)
 		name = strings.Split(name, " ")[0]
 		name = strings.TrimSpace(name)
 
-		fullName := s.Find(".user-leaderboard-list-name .full-name").Text()
+		fullName := s.Find("h2 a span").Text()
 		fullName = t.trimBraces(fullName)
 
-		linkHref, exists := s.Find(".user-leaderboard-list-name a").Attr("href")
+		linkHref, exists := s.Find("h2 a").Attr("href")
 		linkURL := t.appendBaseHostToPath(linkHref, exists)
 
-		avatar, exists := s.Find("img.leaderboard-gravatar").Attr("src")
+		avatar, exists := s.Find("a img").Attr("src")
 		avatarURL := t.buildAvatarURL(avatar, exists)
 
 		developers = append(developers, t.newDeveloper(name, fullName, linkURL, avatarURL))
