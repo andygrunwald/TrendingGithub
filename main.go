@@ -12,6 +12,9 @@ import (
 )
 
 const (
+	// Name of the application
+	Name = "@TrendingGithub"
+
 	// Version of @TrendingGithub
 	Version = "0.4.0"
 )
@@ -42,12 +45,12 @@ func main() {
 
 	// Output the version and exit
 	if *showVersion {
-		fmt.Printf("@TrendingGithub v%s\n", Version)
+		fmt.Printf("%s v%s\n", Name, Version)
 		return
 	}
 
-	log.Println("Hey, nice to meet you. My name is @TrendingGithub. Lets get ready to tweet some trending content!")
-	defer log.Println("Nice sesssion. A lot of knowledge was tweeted. Good work and see you next time!")
+	log.Printf("Hey, my name is %s (v%s). Lets get ready to tweet some trending content!\n", Name, Version)
+	defer log.Println("Nice session. A lot of knowledge was spreaded. Good work. See you next time!")
 
 	// Prepare the twitter client
 	twitterClient := twitter.NewClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode)
