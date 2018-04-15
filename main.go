@@ -110,7 +110,14 @@ func initExpvarServer(port int) {
 
 // initStorageBackend will start the storage backend
 func initStorageBackend(address, auth string, debug bool) storage.Pool {
-	storageBackend := storage.NewBackend(address, auth, debug)
+	var storageBackend storage.Pool
+
+	if debug {
+		storageBackend = storage.NewDebugBackend()
+	} else {
+		storageBackend = storage.NewBackend(address, auth)
+	}
+
 	defer storageBackend.Close()
 	log.Println("Storage backend: Initialisation ✅")
 
