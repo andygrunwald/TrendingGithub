@@ -26,6 +26,9 @@ type Pool interface {
 type Connection interface {
 	io.Closer
 
+	// Err will return an error once one occured
+	Err() error
+
 	// MarkRepositoryAsTweeted marks a single projects as "already tweeted".
 	// This information will be stored in Redis as a simple set with a TTL.
 	// The timestamp of the tweet will be used as value.

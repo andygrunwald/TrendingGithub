@@ -70,6 +70,11 @@ func (rp RedisPool) Get() Connection {
 	return &rc
 }
 
+// Err will return an error once one occured
+func (rc *RedisConnection) Err() error {
+	return rc.conn.Err()
+}
+
 // Close will close a single redis connection
 func (rc *RedisConnection) Close() error {
 	return rc.conn.Close()

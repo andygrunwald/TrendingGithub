@@ -10,12 +10,14 @@ var (
 
 func TestRedis_Get_FailedConnection(t *testing.T) {
 	storage := RedisStorage{}
-	pool := storage.NewPool("no-host:0", "wrong-auth")
-	defer pool.Close()
-	conn := pool.Get()
-	err := conn.Close()
 
-	if err == nil {
+	pool := storage.NewPool("something:1234", "wrong-auth")
+	defer pool.Close()
+
+	conn := pool.Get()
+	defer conn.Close()
+
+	if conn.Err() == nil {
 		t.Fatal("No error thrown, but expected one, because no redis server available.")
 	}
 }

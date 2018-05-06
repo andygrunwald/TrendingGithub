@@ -42,6 +42,11 @@ func (mp MemoryPool) Get() Connection {
 	}
 }
 
+// Err will return an error once one occured
+func (mc *MemoryConnection) Err() error {
+	return nil
+}
+
 // Close shuts down a in memory connection
 func (mc *MemoryConnection) Close() error {
 	return nil
