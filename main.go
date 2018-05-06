@@ -17,9 +17,17 @@ import (
 const (
 	// Name of the application
 	Name = "@TrendingGithub"
+)
 
+var (
 	// Version of @TrendingGithub
-	Version = "0.4.2"
+	version = "dev"
+
+	// Build commit of @TrendingGithub
+	commit = "none"
+
+	// Build date of @TrendingGithub
+	date = "unknown"
 )
 
 func main() {
@@ -48,11 +56,11 @@ func main() {
 
 	// Output the version and exit
 	if *showVersion {
-		fmt.Printf("%s v%s\n", Name, Version)
+		fmt.Printf("%s v%v, commit %v, built at %v", Name, version, commit, date)
 		return
 	}
 
-	log.Printf("Hey, my name is %s (v%s). Lets get ready to tweet some trending content!\n", Name, Version)
+	log.Printf("Hey, my name is %s (v%s). Lets get ready to tweet some trending content!\n", Name, version)
 	defer log.Println("Nice session. A lot of knowledge was spreaded. Good work. See you next time!")
 
 	twitterClient := initTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode, *configurationRefreshTime)
