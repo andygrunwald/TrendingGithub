@@ -247,7 +247,7 @@ func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, erro
 
 	res, err := storageConn.MarkRepositoryAsTweeted(projectName, score)
 	if err != nil || res != true {
-		log.Printf("Error during adding project %s to tweeted list: %s (%v)\n", projectName, err, res)
+		log.Printf("Adding project %s to tweeted list: ❌  s%s (%v)\n", projectName, err, res)
 	}
 
 	return res, err
@@ -293,9 +293,9 @@ func StartTweeting(twitter *twitter.Client, storageBackend storage.Pool, tweetTi
 		} else {
 			postedTweet, err := twitter.Tweet(tweet.Tweet)
 			if err != nil {
-				log.Printf("Error during tweet publishing process: %s\n", err)
+				log.Printf("Tweet publishing: ❌  (%s)\n", err)
 			} else {
-				log.Printf("New tweet posted! https://twitter.com/TrendingGithub/status/%s\n", postedTweet.IdStr)
+				log.Printf("Tweet publishing: ✅  (https://twitter.com/TrendingGithub/status/%s)\n", postedTweet.IdStr)
 			}
 		}
 		ts.MarkTweetAsAlreadyTweeted(tweet.ProjectName)
@@ -310,7 +310,7 @@ func SetupRegularTweetSearchProcess(tweetSearch *TweetSearch, d time.Duration) {
 			go tweetSearch.GenerateNewTweet()
 		}
 	}()
-	log.Printf("Project search and tweet interval: Every %s\n", d.String())
+	log.Printf("Project search and tweet: Enabled ✅  (every %s)\n", d.String())
 }
 
 // ShuffleStringSlice will randomize a string slice.
