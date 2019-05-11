@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	// GreyListTTL defined the TTL of a repository in seconds: 30 days (~30 days)
-	GreyListTTL = 60 * 60 * 24 * 30
+	// BlackListTTL defined the TTL of a repository in seconds: 30 days (~30 days)
+	BlackListTTL = 60 * 60 * 24 * 30
 )
 
 // Storage represents a new storage type.
