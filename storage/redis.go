@@ -84,7 +84,7 @@ func (rc *RedisConnection) Close() error {
 // This information will be stored in Redis as a simple set with a TTL.
 // The timestamp of the tweet will be used as value.
 func (rc *RedisConnection) MarkRepositoryAsTweeted(projectName, score string) (bool, error) {
-	result, err := redis.String(rc.conn.Do("SET", projectName, score, "EX", GreyListTTL, "NX"))
+	result, err := redis.String(rc.conn.Do("SET", projectName, score, "EX", BlackListTTL, "NX"))
 	if result == RedisOK && err == nil {
 		return true, err
 	}
