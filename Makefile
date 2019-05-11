@@ -9,7 +9,7 @@ build: ## Build app
 
 .PHONY: build
 debug: build ## Run app in debug mode
-	./build/TrendingGithub -- -debug
+	./build/TrendingGithub -debug -twitter-tweet-time 5s
 
 .PHONY: clean
 clean: ## Clean up
