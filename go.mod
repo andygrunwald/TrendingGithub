@@ -14,4 +14,5 @@ require (
 	github.com/google/go-github v15.0.0+incompatible
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135
 	golang.org/x/net v0.0.0-20180502164142-640f4622ab69
+	golang.org/x/text v0.3.2 // indirect
 )
