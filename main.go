@@ -61,7 +61,7 @@ func main() {
 	}
 
 	log.Printf("Hey, my name is %s (v%s). Lets get ready to tweet some trending content!\n", Name, version)
-	defer log.Println("Nice session. A lot of knowledge was spreaded. Good work. See you next time!")
+	defer log.Println("Nice session. A lot of knowledge was shared. Good work. See you next time!")
 
 	twitterClient := initTwitterClient(*twitterConsumerKey, *twitterConsumerSecret, *twitterAccessToken, *twitterAccessTokenSecret, *debugMode, *configurationRefreshTime)
 
@@ -91,9 +91,9 @@ func initTwitterClient(consumerKey, consumerSecret, accessToken, accessTokenSecr
 		twitterClient = twitter.NewClient(consumerKey, consumerSecret, accessToken, accessTokenSecret)
 		err := twitterClient.LoadConfiguration()
 		if err != nil {
-			log.Fatalf("Twitter Configuration: Initialisation ❌  (%s)", err)
+			log.Fatalf("Twitter Configuration: Initialization ❌  (%s)", err)
 		}
-		log.Println("Twitter Configuration: Initialisation ✅")
+		log.Println("Twitter Configuration: Initialization ✅")
 		twitterClient.SetupConfigurationRefresh(confRefreshTime)
 	}
 
@@ -113,7 +113,7 @@ func initExpvarServer(port int) {
 		http.Serve(sock, nil)
 	}()
 
-	log.Println("Expvar: Initialisation ✅")
+	log.Println("Expvar: Initialization ✅")
 }
 
 // initStorageBackend will start the storage backend
@@ -127,7 +127,7 @@ func initStorageBackend(address, auth string, debug bool) storage.Pool {
 	}
 
 	defer storageBackend.Close()
-	log.Println("Storage backend: Initialisation ✅")
+	log.Println("Storage backend: Initialization ✅")
 
 	return storageBackend
 }

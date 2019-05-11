@@ -9,7 +9,7 @@ import (
 // LoadConfiguration requests the latest configuration
 // settings from twitter and stores those in memory.
 // Config settings like numbers of chars needed for the short url
-// and so on are part of this. Thos settings
+// and so on are part of this. Those settings
 // are importent to know how much text we can tweet later
 // See https://dev.twitter.com/rest/reference/get/help/configuration
 func (client *Client) LoadConfiguration() error {

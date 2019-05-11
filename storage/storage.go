@@ -26,7 +26,7 @@ type Pool interface {
 type Connection interface {
 	io.Closer
 
-	// Err will return an error once one occured
+	// Err will return an error once one occurred
 	Err() error
 
 	// MarkRepositoryAsTweeted marks a single projects as "already tweeted".

@@ -16,7 +16,7 @@ A twitter bot (**[@TrendingGithub](https://twitter.com/TrendingGithub)**) to twe
 
 * Tweets trending projects every 30 minutes
 * Refreshes the configuration of twitters URL shortener t.co every 24 hours
-* Greylisting of repositories for 30 days (to avoid tweeting a project multiple times in a short timeframe)
+* Blacklisting of repositories for 30 days (to avoid tweeting a project multiple times in a short timeframe)
 * Maximum use of 140 chars per tweet to fill up with information
 * Debug / development mode
 * Multiple storage backends (currently [Redis](http://redis.io/) and in memory)
