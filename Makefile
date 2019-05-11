@@ -7,6 +7,10 @@ SHELL := /bin/bash
 build: ## Build app
 	@go build -v -o ./build/TrendingGithub
 
+.PHONY: build
+debug: build ## Run app in debug mode
+	./build/TrendingGithub -- -debug
+
 .PHONY: clean
 clean: ## Clean up
 	@rm -fR ./build/ ./cover*
@@ -16,7 +20,8 @@ configure: ## Creates folders
 	@mkdir -p ./build
 
 .PHONY: cover
-cover: test ## Run tests and generates html coverage file
+cover: ## Run tests and generates html coverage file
+	@go test -v -race -coverprofile=./coverage.text -covermode=atomic $(shell go list ./...)
 	@go tool cover -html=./coverage.text -o ./coverage.html
 
 .PHONY: install
@@ -43,7 +48,7 @@ lint: ## Run linters
 
 .PHONY: test
 test: ## Run tests
-	@go test -v -race -coverprofile=./coverage.text -covermode=atomic $(shell go list ./...)
+	@go test -v -race $(shell go list ./...)
 
 help: ## This help message
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
