@@ -1,6 +1,6 @@
-github.com/ChimeraCoder/anaconda v2.0.0+incompatible h1:F0eD7CHXieZ+VLboCD5UAqCeAzJZxcr90zSCcuJopJs=
+github.com/ChimeraCoder/anaconda v2.0.0+incompatible h1:slAmCJMpjEztM42qRfhFkh3gBLHnIUUmlMK5zFd60Pc=
 github.com/ChimeraCoder/anaconda v2.0.0+incompatible/go.mod h1:TCt3MijIq3Qqo9SBtuW/rrM4x7rDfWqYWHj8T7hLcLg=
-github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 h1:r+EmXjfPosKO4wfiMLe1XQictsIlhErTufbWUsjOTZs=
+github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 h1:VhNF/1LOAMtJOPjNt+f785lF3H37n1b/kiinFgqL6hM=
 github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7/go.mod h1:b2EuEMLSG9q3bZ95ql1+8oVqzzrTNSiOQqSXWFBzxeI=
 github.com/PuerkitoBio/goquery v1.5.0 h1:uGvmFXOA73IKluu/F84Xd1tt/z07GYm8X49XKHP7EJk=
 github.com/PuerkitoBio/goquery v1.5.0/go.mod h1:qD2PgZ9lccMbQlc7eEOjaeRlFQON7xY8kdmcsrnKqMg=
