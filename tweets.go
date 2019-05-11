@@ -267,7 +267,7 @@ func StartTweeting(twitter *twitter.Client, storageBackend storage.Pool, tweetTi
 		URLLength: twitter.Configuration.ShortUrlLengthHttps,
 	}
 	SetupRegularTweetSearchProcess(ts, tweetTime)
-	log.Println("Everything setted up. Lets wait for the first trending project...")
+	log.Println("Setup complete. Lets wait for the first trending project...")
 
 	// Waiting for tweets ...
 	for tweet := range ts.Channel {
