@@ -51,7 +51,7 @@ func TestRedis_MarkRepositoryAsTweeted(t *testing.T) {
 	}
 
 	if res == false {
-		t.Fatal("Marking repositoriy failed, got false, expected true")
+		t.Fatal("Marking repository failed, got false, expected true")
 	}
 }
 
@@ -78,7 +78,7 @@ func TestRedis_IsRepositoryAlreadyTweeted(t *testing.T) {
 	}
 
 	if res == false {
-		t.Fatal("Marking repositoriy failed, got false, expected true")
+		t.Fatal("Marking repository failed, got false, expected true")
 	}
 
 	res, err = conn.IsRepositoryAlreadyTweeted(testProject)

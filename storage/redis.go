@@ -70,7 +70,7 @@ func (rp RedisPool) Get() Connection {
 	return &rc
 }
 
-// Err will return an error once one occured
+// Err will return an error once one occurred
 func (rc *RedisConnection) Err() error {
 	return rc.conn.Err()
 }

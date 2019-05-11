@@ -42,7 +42,7 @@ func (mp MemoryPool) Get() Connection {
 	}
 }
 
-// Err will return an error once one occured
+// Err will return an error once one occurred
 func (mc *MemoryConnection) Err() error {
 	return nil
 }

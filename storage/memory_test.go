@@ -21,7 +21,7 @@ func TestMemory_MarkRepositoryAsTweeted(t *testing.T) {
 	}
 
 	if res == false {
-		t.Fatal("Marking repositoriy failed, got false, expected true")
+		t.Fatal("Marking repository failed, got false, expected true")
 	}
 }
 
@@ -46,7 +46,7 @@ func TestMemory_IsRepositoryAlreadyTweeted(t *testing.T) {
 	}
 
 	if res == false {
-		t.Fatal("Marking repositoriy failed, got false, expected true")
+		t.Fatal("Marking repository failed, got false, expected true")
 	}
 
 	res, err = conn.IsRepositoryAlreadyTweeted(memoryTestProjectName)
