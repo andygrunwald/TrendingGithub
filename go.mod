@@ -8,8 +8,13 @@ require (
 	github.com/dustin/go-jsonpointer v0.0.0-20160814072949-ba0abeacc3dc // indirect
 	github.com/dustin/gojson v0.0.0-20160307161227-2e71ec9dd5ad // indirect
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17 // indirect
-	github.com/garyburd/redigo v1.6.2
+	github.com/garyburd/redigo v1.6.3
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	golang.org/x/net v0.0.0-20190509222800-a4d6f7feada5 // indirect
+)
+
+require (
+	github.com/PuerkitoBio/goquery v1.5.0 // indirect
+	github.com/andybalholm/cascadia v1.0.0 // indirect
 )
