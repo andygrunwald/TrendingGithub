@@ -1,7 +1,28 @@
-# Needed SHELL since I'm using zsh
-SHELL := /bin/bash
+.DEFAULT_GOAL := help
 
-.DEFAULT_GOAL := build
+.PHONY: help
+help: ## Outputs the help.
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: test
+test: ## Runs all unit, integration and example tests.
+	go test -race -v ./...
+
+.PHONY: vet
+vet: ## Runs go vet (to detect suspicious constructs).
+	go vet ./...
+
+.PHONY: fmt
+fmt: ## Runs go fmt (to check for go coding guidelines).
+	gofmt -d -s .
+
+.PHONY: staticcheck
+staticcheck: ## Runs static analysis to prevend bugs, foster code simplicity, performance and editor integration.
+	go get -u honnef.co/go/tools/cmd/staticcheck
+	staticcheck ./...
+
+.PHONY: all
+all: test vet fmt staticcheck ## Runs all source code quality targets (like test, vet, fmt, staticcheck)
 
 .PHONY: build
 build: ## Build app
@@ -10,45 +31,3 @@ build: ## Build app
 .PHONY: build
 debug: build ## Run app in debug mode
 	./build/TrendingGithub -debug -twitter-tweet-time 5s
-
-.PHONY: clean
-clean: ## Clean up
-	@rm -fR ./build/ ./cover*
-
-.PHONY: configure
-configure: ## Creates folders
-	@mkdir -p ./build
-
-.PHONY: cover
-cover: ## Run tests and generates html coverage file
-	@go test -v -race -coverprofile=./coverage.text -covermode=atomic $(shell go list ./...)
-	@go tool cover -html=./coverage.text -o ./coverage.html
-
-.PHONY: install
-install: ## Install app
-	go install
-
-.PHONY: lint
-lint: ## Run linters
-	gometalinter \
-		--disable-all \
-		--exclude=vendor \
-		--deadline=180s \
-		--enable=gofmt \
-		--linter='errch:errcheck {path}:PATH:LINE:MESSAGE' \
-		--enable=errch \
-		--enable=vet \
-		--enable=gocyclo \
-		--cyclo-over=15 \
-		--enable=golint \
-		--min-confidence=0.85 \
-		--enable=ineffassign \
-		--enable=misspell \
-		./..
-
-.PHONY: test
-test: ## Run tests
-	@go test -v -race $(shell go list ./...)
-
-help: ## This help message
-	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
