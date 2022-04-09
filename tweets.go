@@ -46,7 +46,7 @@ func (ts *TweetSearch) GenerateNewTweet() {
 	projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, "")
 
 	// Check if we found a project. If yes tweet it.
-	if ts.IsProjectEmpty(projectToTweet) == false {
+	if !ts.IsProjectEmpty(projectToTweet) {
 		ts.SendProject(projectToTweet)
 		return
 	}
@@ -60,7 +60,7 @@ func (ts *TweetSearch) GenerateNewTweet() {
 		projectToTweet = ts.TimeframeLoopToSearchAProject(timeFrames, language)
 
 		// If we found a project, break this loop again.
-		if ts.IsProjectEmpty(projectToTweet) == false {
+		if !ts.IsProjectEmpty(projectToTweet) {
 			ts.SendProject(projectToTweet)
 			break
 		}
@@ -85,7 +85,7 @@ func (ts *TweetSearch) TimeframeLoopToSearchAProject(timeFrames []string, langua
 
 		// Check if we found a project.
 		// If yes we can leave the loop and keep on rockin
-		if ts.IsProjectEmpty(projectToTweet) == false {
+		if !ts.IsProjectEmpty(projectToTweet) {
 			break
 		}
 	}
@@ -145,7 +145,7 @@ func (ts *TweetSearch) FindProjectWithRandomProjectGenerator(getProject func() (
 
 		// If the project was already tweeted
 		// we will skip this project and go to the next one
-		if alreadyTweeted == true {
+		if alreadyTweeted {
 			continue
 		}
 
@@ -246,7 +246,7 @@ func (ts *TweetSearch) MarkTweetAsAlreadyTweeted(projectName string) (bool, erro
 	score := now.Format("20060102150405")
 
 	res, err := storageConn.MarkRepositoryAsTweeted(projectName, score)
-	if err != nil || res != true {
+	if err != nil || !res {
 		log.Printf("Adding project %s to tweeted list: ❌  s%s (%v)\n", projectName, err, res)
 	}
 
@@ -346,7 +346,7 @@ func Crop(content string, chars int, afterstring string, crop2space bool) string
 
 	if chars < 0 {
 		cropedContent = content[len(content)+chars:]
-		if crop2space == true {
+		if crop2space {
 			truncatePosition = strings.Index(cropedContent, " ")
 		}
 		if truncatePosition >= 0 {
@@ -356,7 +356,7 @@ func Crop(content string, chars int, afterstring string, crop2space bool) string
 
 	} else {
 		cropedContent = content[:chars-1]
-		if crop2space == true {
+		if crop2space {
 			truncatePosition = strings.LastIndex(cropedContent, " ")
 		}
 		if truncatePosition >= 0 {
