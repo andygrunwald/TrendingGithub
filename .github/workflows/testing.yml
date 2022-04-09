@@ -92,6 +92,21 @@ jobs:
       matrix:
         go: [ '1.18', '1.17' ]
 
+    # See https://docs.github.com/en/actions/using-containerized-services/creating-redis-service-containers
+    services:
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
