@@ -81,7 +81,7 @@ func (t *Trend) GetRandomProjectGenerator(timeFrame, language string) func() (tr
 		// If there are no more projects anymore, we will return an error.
 		numOfProjects := len(projects)
 		if numOfProjects == 0 {
-			return trending.Project{}, errors.New("No projects found")
+			return trending.Project{}, errors.New("no projects found")
 		}
 
 		// If there are projects left, chose a random one ...
