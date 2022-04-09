@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
 	github.com/andygrunwald/go-trending v0.0.0-20220409064206-0c4061ad5100
-	github.com/garyburd/redigo v1.6.3
+	github.com/gomodule/redigo v1.8.8
 	github.com/google/go-github v17.0.0+incompatible
 )
 
