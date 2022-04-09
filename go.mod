@@ -1,15 +1,25 @@
 module github.com/andygrunwald/TrendingGithub
 
+go 1.18
+
 require (
 	github.com/ChimeraCoder/anaconda v2.0.0+incompatible
+	github.com/andygrunwald/go-trending v0.0.0-20220409064206-0c4061ad5100
+	github.com/garyburd/redigo v1.6.3
+	github.com/google/go-github v17.0.0+incompatible
+)
+
+require (
 	github.com/ChimeraCoder/tokenbucket v0.0.0-20131201223612-c5a927568de7 // indirect
-	github.com/andygrunwald/go-trending v0.0.0-20190511191719-376f0d4d5e7f
+	github.com/PuerkitoBio/goquery v1.8.0 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/azr/backoff v0.0.0-20160115115103-53511d3c7330 // indirect
 	github.com/dustin/go-jsonpointer v0.0.0-20160814072949-ba0abeacc3dc // indirect
 	github.com/dustin/gojson v0.0.0-20160307161227-2e71ec9dd5ad // indirect
 	github.com/garyburd/go-oauth v0.0.0-20180319155456-bca2e7f09a17 // indirect
-	github.com/garyburd/redigo v1.6.2
-	github.com/google/go-github v17.0.0+incompatible
-	github.com/google/go-querystring v1.0.0 // indirect
-	golang.org/x/net v0.0.0-20190509222800-a4d6f7feada5 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
+	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2 // indirect
+	golang.org/x/net v0.0.0-20220407224826-aac1ed45d8e3 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/text v0.3.7 // indirect
 )
