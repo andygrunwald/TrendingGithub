@@ -119,11 +119,7 @@ func (ts *TweetSearch) SendProject(p trending.Project) {
 
 // IsProjectEmpty checks if the incoming project is empty
 func (ts *TweetSearch) IsProjectEmpty(p trending.Project) bool {
-	if len(p.Name) > 0 {
-		return false
-	}
-
-	return true
+	return len(p.Name) <= 0
 }
 
 // FindProjectWithRandomProjectGenerator retrieves a new project and checks if this was already tweeted.
