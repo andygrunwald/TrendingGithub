@@ -68,7 +68,7 @@ func (client *Client) FollowNewPerson() error {
 		shouldIFollow := client.isThereARelationship(friendships)
 
 		// If we got a relationship, we will repeat the process ...
-		if shouldIFollow == false {
+		if !shouldIFollow {
 			continue
 		}
 

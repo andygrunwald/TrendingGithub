@@ -71,7 +71,7 @@ func (mc *MemoryConnection) MarkRepositoryAsTweeted(projectName, score string) (
 //	b) the project ttl expired and is ready to tweet again
 func (mc *MemoryConnection) IsRepositoryAlreadyTweeted(projectName string) (bool, error) {
 	if val, ok := mc.storage[projectName]; ok {
-		if res := val.Before(time.Now()); res == true {
+		if res := val.Before(time.Now()); res {
 			delete(mc.storage, projectName)
 			return false, nil
 		}
