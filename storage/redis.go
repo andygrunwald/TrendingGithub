@@ -93,6 +93,7 @@ func (rc *RedisConnection) MarkRepositoryAsTweeted(projectName, score string) (b
 
 // IsRepositoryAlreadyTweeted checks if a project was already tweeted.
 // If it is not available
+//
 //	a) the project was not tweeted yet
 //	b) the project ttl expired and is ready to tweet again
 func (rc *RedisConnection) IsRepositoryAlreadyTweeted(projectName string) (bool, error) {
