@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        go: [ '1.20', '1.19' ]
+        go: [stable, oldstable]
 
     steps:
       - uses: actions/checkout@v6
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        go: [ '1.20', '1.19' ]
+        go: [stable, oldstable]
 
     steps:
       - uses: actions/checkout@v6
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        go: [ '1.20', '1.19' ]
+        go: [stable, oldstable]
 
     steps:
       - uses: actions/checkout@v6
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        go: [ '1.20', '1.19' ]
+        go: [stable, oldstable]
 
     # See https://docs.github.com/en/actions/using-containerized-services/creating-redis-service-containers
     services:
